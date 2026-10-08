@@ -1,0 +1,28 @@
+{
+    "raw_files": 81,
+    "participants": 81,
+    "raw_response_records": 487,
+    "valid_task_records": 486,
+    "skipped_records": 1,
+    "scenario_counts": {
+        "thank": 78,
+        "wedding": 51,
+        "apology": 76,
+        "letter": 68,
+        "condolence": 61,
+        "reassurance": 60,
+        "speech": 73,
+        "eulogy": 19
+    },
+    "model_generation_shown_counts": {
+        "1": 324,
+        "0": 162
+    },
+    "issues": [
+        {
+            "file": "417a64ff-e3b5-45c1-a926-83e8b3897840.json",
+            "task_key": "7",
+            "reason": "incomplete_task"
+        }
+    ]
+}
