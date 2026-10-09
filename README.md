@@ -1,7 +1,7 @@
 # Can You Make It Sound Like You? Post-Editing LLM-Generated Text for Personal Style
 
 **Team:** Fourth Dimension\
-**Team Members:** Rahul Behar, Kashvi Patil, Somili Basu
+**Team Members:** Rahul Behra, Kashvi Patil, Soumili Basu
 
 ## Overview
 
@@ -112,6 +112,6 @@ pages 43867--43895.
 
 **Fourth Dimension**
 
--   Rahul Behar
+-   Rahul Behra
 -   Kashvi Patil
--   Somili Basu
+-   Soumili Basu
