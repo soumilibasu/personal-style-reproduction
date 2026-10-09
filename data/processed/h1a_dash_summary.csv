@@ -1,0 +1,2 @@
+n_participants,n_treatment_tasks,mean_own_control_similarity,mean_other_controls_similarity,mean_difference_other_minus_own,permutation_p_value,hedges_g_other_minus_own,hedges_g_ci_95_lower,hedges_g_ci_95_upper,n_permutations,n_bootstraps
+81,324,0.8323564162157939,0.8164724740338938,-0.015883942181900222,9.999000099990002e-05,-0.44125127789977764,-0.6104512184223275,-0.27895811106607127,10000,1000

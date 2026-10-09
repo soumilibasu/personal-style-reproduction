@@ -1,0 +1,2 @@
+n_participants,n_treatment_tasks,mean_draft_to_control,mean_edited_to_control,mean_change_after_editing,permutation_p_two_sided,hedges_g_edited_vs_draft,g_ci_95_low,g_ci_95_high,n_permutations,n_bootstrap_samples,random_seed
+81,324,0.8148176987183369,0.8323564162157939,0.017538717497457057,9.999000099990002e-05,0.4044642965213023,0.24085981708358878,0.5797818262295751,10000,1000,42
