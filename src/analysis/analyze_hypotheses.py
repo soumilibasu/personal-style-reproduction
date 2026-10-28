@@ -91,9 +91,12 @@ PAPER_REFERENCE = {
     "H1b": {"g": -0.41, "p": 0.0002},
     "H1c": {"g": -1.43, "p": 0.0002},
     "H2a": {"g": 1.42, "p": 0.0002},
-    "H2b": {"g": None, "p": None},
-    "H2c": {"g": None, "p": None},
+    "H2b": {"g": -0.69, "p": 0.0002},
+    "H2c": {"g": 1.14, "p": 0.0002},
 }
+
+# Paper's H3 repeated-measures correlation (Section 6.3, Figure 8).
+PAPER_H3 = {"rmcorr_r": 0.244, "ci_halfwidth": 0.076, "p": 0.0001}
 
 
 # ---------------------------------------------------------------------------
@@ -257,13 +260,73 @@ def mean_sim_to_other_participants(target_matrix, target_pids,
     return np.nanmean(masked, axis=1)
 
 
-def pairwise_similarities_between_participants(rep_matrix):
-    """All unique off-diagonal pairwise cosine similarities among a set of
-    per-participant representation vectors (upper triangle)."""
-    r = unit_rows(rep_matrix)
-    sim = r @ r.T
-    iu = np.triu_indices(len(r), k=1)
-    return sim[iu]
+def pairwise_similarities_cross_participant(matrix, pids):
+    """All pairwise cosine similarities between texts from DIFFERENT
+    participants.
+
+    This matches the paper's Figure 6 homogeneity measure ("stylistic
+    similarity between pairs of text from different participants"). Using
+    the individual texts (not participant centroids) is important: taking
+    centroids first averages away within-participant variation and inflates
+    the apparent homogeneity.
+    """
+    u = unit_rows(matrix)
+    sim = u @ u.T
+    pids = np.asarray(pids)
+    iu = np.triu_indices(len(u), k=1)
+    same = pids[iu[0]] == pids[iu[1]]
+    return sim[iu][~same]
+
+
+def repeated_measures_correlation(x, y, subjects):
+    """Repeated-measures correlation (Bakdash & Marusich, 2017).
+
+    Estimates the common within-participant association between x and y by
+    fitting y ~ x + participant fixed effects (one intercept per
+    participant, a single shared slope for x). This is how the paper
+    analyses H3 (Figure 8), so it must pool the repeated observations each
+    participant contributes (here: the draft and the edited text of every
+    treatment task) rather than correlating one point per task.
+
+    Returns (r, p, df_error, ci_low, ci_high, slope).
+    """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    subjects = np.asarray(subjects)
+
+    uniq = pd.unique(subjects)
+    idx = {s: i for i, s in enumerate(uniq)}
+    dummies = np.zeros((len(x), len(uniq)))
+    for row, s in enumerate(subjects):
+        dummies[row, idx[s]] = 1.0
+
+    # Design: shared slope for x + one intercept per participant.
+    design = np.column_stack([x, dummies])
+    beta, _, _, _ = np.linalg.lstsq(design, y, rcond=None)
+    residuals = y - design @ beta
+
+    n = len(x)
+    k = len(uniq)
+    df_error = n - k - 1
+    if df_error <= 1:
+        return np.nan, np.nan, df_error, np.nan, np.nan, np.nan
+
+    sigma2 = float(residuals @ residuals) / df_error
+    xtx_inv = np.linalg.pinv(design.T @ design)
+    se_slope = np.sqrt(sigma2 * xtx_inv[0, 0])
+    slope = beta[0]
+
+    t_stat = slope / se_slope
+    r = float(np.sign(slope) * abs(t_stat) / np.sqrt(t_stat ** 2 + df_error))
+    p = float(2 * stats.t.sf(abs(t_stat), df_error))
+
+    # Fisher-z 95% CI using the rmcorr error df.
+    z = np.arctanh(r)
+    se_z = 1.0 / np.sqrt(df_error - 1)
+    ci_low = float(np.tanh(z - 1.96 * se_z))
+    ci_high = float(np.tanh(z + 1.96 * se_z))
+
+    return r, p, df_error, ci_low, ci_high, float(slope)
 
 
 # ---------------------------------------------------------------------------
@@ -414,8 +477,12 @@ def load_self_ratings():
             rows.append({
                 "participant_id": str(r["participant_id"]),
                 "task_key": str(r["task_key"]),
-                "perceived_edited_capture": num(likert.get("edited-capture")),
-                "perceived_original_capture": num(likert.get("original-capture")),
+                # Draft (LLM) self-similarity ratings.
+                "draft_capture": num(likert.get("original-capture")),
+                "draft_friend": num(likert.get("original-friend")),
+                # Edited self-similarity ratings.
+                "edited_capture": num(likert.get("edited-capture")),
+                "edited_friend": num(likert.get("edited-friend")),
                 "voice_important": num(likert.get("voice-important")),
             })
     return pd.DataFrame(rows)
@@ -477,15 +544,18 @@ def main():
     ))
 
     # ----- H2a: homogeneity edited vs control ----------------------------
-    control_pairs = pairwise_similarities_between_participants(
-        np.stack([views["control_vec_by_pid"][p]
-                  for p in sorted(views["control_vec_by_pid"])])
+    # Between-participant pairwise similarity on the individual texts
+    # (matches Figure 6; one control point per participant is all we have).
+    control_pairs = pairwise_similarities_cross_participant(
+        views["control_mat"], views["control_pids"]
     )
-    edited_pairs = pairwise_similarities_between_participants(
-        views["edited_centroids"]
+    edited_pairs = pairwise_similarities_cross_participant(
+        views["edited_mat"],
+        views["edited_rows"]["participant_id"].to_numpy(),
     )
-    draft_pairs = pairwise_similarities_between_participants(
-        views["draft_centroids"]
+    draft_pairs = pairwise_similarities_cross_participant(
+        views["draft_mat"],
+        views["draft_rows"]["participant_id"].to_numpy(),
     )
 
     results.append(compare_two_lists(
@@ -522,44 +592,80 @@ def main():
     ], ignore_index=True)
     h2_pairs.to_csv(OUT_DIR / "h2_homogeneity_pairs.csv", index=False)
 
-    # ----- H3: perceived vs measured self-similarity ---------------------
+    # ----- H3: perceived vs measured self-similarity (rmcorr) ------------
+    # The paper (Section 6.3, Figure 8) correlates perceived self-similarity
+    # with LUAR self-similarity for treatment text using repeated-measures
+    # correlation, pooling BOTH texts of each task (the LLM draft and the
+    # post-edited version). Perceived self-similarity averages the style
+    # "capture" questions asked about each text. Using only the edited text
+    # with a plain correlation (our earlier approach) throws away the
+    # within-participant draft-vs-edited contrast the paper relies on.
     ratings = load_self_ratings()
-    h3 = tasks.merge(ratings, on=["participant_id", "task_key"], how="inner")
+    merged = tasks.merge(ratings, on=["participant_id", "task_key"],
+                         how="inner")
 
-    perceived = h3["perceived_edited_capture"].to_numpy()
-    measured = h3["edited_to_control"].to_numpy()
-    valid = np.isfinite(perceived) & np.isfinite(measured)
-    perceived, measured = perceived[valid], measured[valid]
-    h3_valid = h3[valid].copy()
+    def build_long(draft_items, edited_items):
+        recs = []
+        for _, row in merged.iterrows():
+            recs.append({
+                "participant_id": row["participant_id"],
+                "task_key": row["task_key"], "text": "draft",
+                "perceived": np.nanmean([row[c] for c in draft_items]),
+                "luar_self_sim": row["draft_to_control"],
+            })
+            recs.append({
+                "participant_id": row["participant_id"],
+                "task_key": row["task_key"], "text": "edited",
+                "perceived": np.nanmean([row[c] for c in edited_items]),
+                "luar_self_sim": row["edited_to_control"],
+            })
+        long = pd.DataFrame(recs)
+        return long[np.isfinite(long["perceived"])
+                    & np.isfinite(long["luar_self_sim"])].copy()
 
-    spearman_r, spearman_p = stats.spearmanr(perceived, measured)
-    pearson_r, pearson_p = stats.pearsonr(perceived, measured)
+    # Primary: average the two style-capture items (capture + friend).
+    long_cf = build_long(["draft_capture", "draft_friend"],
+                         ["edited_capture", "edited_friend"])
+    # Figure 8 rescales the 1-5 Likert to 0-1; this does not change the
+    # correlation but keeps the saved column comparable to the paper.
+    long_cf["perceived_scaled_0_1"] = (long_cf["perceived"] - 1) / 4
 
-    # Binary agreement: did the participant feel editing improved capture of
-    # their style, and did LUAR agree that editing moved it toward control?
-    perceived_improved = (
-        h3_valid["perceived_edited_capture"]
-        >= h3_valid["perceived_original_capture"]
-    ).to_numpy()
-    measured_improved = (h3_valid["change_after_editing"] > 0).to_numpy()
-    agreement_rate = float(np.mean(perceived_improved == measured_improved))
+    r_cf, p_cf, df_cf, lo_cf, hi_cf, slope_cf = (
+        repeated_measures_correlation(
+            long_cf["perceived"], long_cf["luar_self_sim"],
+            long_cf["participant_id"])
+    )
 
-    h3_valid.to_csv(OUT_DIR / "h3_perception_vs_measure.csv", index=False)
+    # Robustness check: the "capture" item alone.
+    long_c = build_long(["draft_capture"], ["edited_capture"])
+    r_c, p_c, _, _, _, _ = repeated_measures_correlation(
+        long_c["perceived"], long_c["luar_self_sim"],
+        long_c["participant_id"])
+
+    long_cf.to_csv(OUT_DIR / "h3_perception_vs_measure.csv", index=False)
 
     h3_result = {
         "hypothesis": "H3",
         "description": (
-            "Participants agree with the automatic style metric about "
-            "whether post-editing made the text sound like them."
+            "Participants' perceived self-similarity agrees with the LUAR "
+            "style metric (repeated-measures correlation over the draft and "
+            "edited text of each treatment task)."
         ),
-        "comparison": "perceived self-similarity (edited-capture, 1-5)  vs  "
-                      "LUAR edited->own control",
-        "n": int(len(perceived)),
-        "spearman_r": float(spearman_r),
-        "spearman_p": float(spearman_p),
-        "pearson_r": float(pearson_r),
-        "pearson_p": float(pearson_p),
-        "binary_agreement_rate": agreement_rate,
+        "comparison": "perceived self-similarity (capture+friend, 1-5)  vs  "
+                      "LUAR similarity to own control",
+        "method": "repeated-measures correlation (Bakdash & Marusich, 2017)",
+        "n_observations": int(len(long_cf)),
+        "n_participants": int(long_cf["participant_id"].nunique()),
+        "rmcorr_r": float(r_cf),
+        "rmcorr_p": float(p_cf),
+        "df_error": int(df_cf),
+        "ci_95_low": float(lo_cf),
+        "ci_95_high": float(hi_cf),
+        "rmcorr_r_capture_only": float(r_c),
+        "rmcorr_p_capture_only": float(p_c),
+        "paper_rmcorr_r": PAPER_H3["rmcorr_r"],
+        "paper_ci_halfwidth": PAPER_H3["ci_halfwidth"],
+        "paper_p": PAPER_H3["p"],
     }
 
     # ----- Assemble summary table ----------------------------------------
@@ -651,13 +757,16 @@ def main():
     print("\n" + "-" * 72)
     print("[H3] " + h3_result["description"])
     print(f"   comparison        : {h3_result['comparison']}")
-    print(f"   n tasks           : {h3_result['n']}")
-    print(f"   Spearman r / p    : {fmt(spearman_r, 3)} / "
-          f"{fmt(spearman_p, 5)}")
-    print(f"   Pearson r / p     : {fmt(pearson_r, 3)} / "
-          f"{fmt(pearson_p, 5)}")
-    print(f"   binary agreement  : {fmt(agreement_rate, 3)} "
-          f"(perceived vs measured 'editing helped')")
+    print(f"   method            : {h3_result['method']}")
+    print(f"   observations      : {h3_result['n_observations']} "
+          f"(2 texts x task) from {h3_result['n_participants']} participants")
+    print(f"   rmcorr r          : {fmt(r_cf, 3)}  "
+          f"(p = {fmt(p_cf, 5)}, df = {df_cf})")
+    print(f"   95% CI for r      : [{fmt(lo_cf, 3)}, {fmt(hi_cf, 3)}]")
+    print(f"   paper rmcorr r    : {PAPER_H3['rmcorr_r']} "
+          f"+/- {PAPER_H3['ci_halfwidth']} (p < {PAPER_H3['p']})")
+    print(f"   capture-only r    : {fmt(r_c, 3)} (p = {fmt(p_c, 5)}) "
+          f"[robustness]")
 
     print("\n" + "=" * 72)
     print("COMPACT TABLE")

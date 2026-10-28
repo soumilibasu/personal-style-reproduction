@@ -147,10 +147,22 @@ Outputs (in `data/processed/hypotheses/`):
 - `h3_perception_vs_measure.csv` — perceived vs. measured self-similarity.
 - `hypotheses_report.json` — machine-readable summary plus method caveats.
 
-All seven H1/H2 effect-size **directions** reproduce the paper. Exact
-magnitudes differ where our operationalization differs (the script
-documents each choice, e.g. the LLM reference is other participants'
-drafts, and homogeneity uses one representation per participant).
+All seven H1/H2 effect-size **directions** reproduce the paper, and
+several magnitudes are close:
+
+- **H1b** *g* = −0.42 vs −0.41 (near-exact).
+- **H2a** *g* = 1.54 vs 1.42, **H2b** −0.39 vs −0.69, **H2c** 1.82 vs 1.14
+  — homogeneity uses the paper's between-author pairwise similarity on the
+  **individual** texts (not participant centroids).
+- **H3** uses **repeated-measures correlation** over both the draft and
+  the edited text of each treatment task (Bakdash & Marusich, 2017), as the
+  paper does: *r* = 0.23, 95% CI [0.15, 0.31] vs the paper's 0.244 ± 0.076.
+
+The remaining gaps (**H1a** 0.40 vs 0.55, **H1c** −1.96 vs −1.43) trace to
+the LUAR embedding step, which `src/embed_luar.py` flags as not an exact
+reproduction of the authors' preprocessing (combined control reference and
+a practical chunking strategy). Closing them requires re-embedding; the
+analysis code itself matches the paper's method.
 
 ### Stage 3 — novel analysis: which edits recover personal style?
 
