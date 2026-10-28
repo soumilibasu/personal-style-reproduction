@@ -92,13 +92,103 @@ The paper notes several limitations:
 -   The study did not directly evaluate how the eventual recipients of
     the writing would perceive the edited text.
 
+## Reproduction Pipeline and Analysis
+
+This repository reproduces the paper's pre-registered hypotheses on the
+released study logs and adds one novel analysis. The full pipeline runs
+from the repository root with the Python environment in `.venv`.
+
+### Data
+
+- `data/raw/` — one JSON file per participant (81 participants). Each
+  task stores the planned `details`, the LLM `model_generation`, the
+  participant's `final_version`, a keystroke-level `edits` log, and
+  `likert` self-ratings.
+- `data/processed/` — derived files produced by the scripts below
+  (task records, LUAR embeddings, similarity tables, analysis outputs).
+
+### Stage 1 — build the analysis data
+
+```bash
+python src/load_dataset.py        # data/raw/*.json  -> task_records.jsonl (+ report)
+python src/build_participant_data.py
+python src/prepare_analysis.py     # -> analysis_ready.jsonl
+python src/embed_luar.py           # LUAR-MUD embeddings -> luar_embeddings.npz (+ index)
+```
+
+`src/embed_luar.py` requires `torch` and `transformers` and downloads the
+`rrivera1849/LUAR-MUD` model; the other stages need only numpy/pandas.
+The embeddings are already committed, so the analysis stages below run
+without re-embedding.
+
+### Stage 2 — all hypotheses (one file)
+
+```bash
+python src/analysis/analyze_hypotheses.py
+```
+
+This single script reproduces **H1a** (also available standalone in
+`src/analysis/analyze_h1a.py`) and adds **H1a', H1b, H1c, H2a, H2b, H2c,
+and H3**. Every stylistic-similarity hypothesis uses cosine similarity of
+LUAR-MUD embeddings; each is tested with a 10,000-sample permutation test
+and Hedges' *g* with a bootstrap 95% CI, matching the paper and the
+existing `analyze_h1a.py`. H3 reports the correlation between perceived
+and measured self-similarity.
+
+Outputs (in `data/processed/hypotheses/`):
+
+- `all_hypotheses_summary.csv` — one row per hypothesis with the mean
+  difference, permutation *p*, Hedges' *g* and CI, and the paper's
+  reported *g* for side-by-side comparison.
+- `h1_task_scores.csv` — per-task similarity scores used by H1 and by the
+  novel analysis.
+- `h2_homogeneity_pairs.csv` — between-author pairwise similarities
+  (H2a/H2b/H2c).
+- `h3_perception_vs_measure.csv` — perceived vs. measured self-similarity.
+- `hypotheses_report.json` — machine-readable summary plus method caveats.
+
+All seven H1/H2 effect-size **directions** reproduce the paper. Exact
+magnitudes differ where our operationalization differs (the script
+documents each choice, e.g. the LLM reference is other participants'
+drafts, and homogeneity uses one representation per participant).
+
+### Stage 3 — novel analysis: which edits recover personal style?
+
+The paper shows *that* post-editing moves text toward the author's style;
+it does not ask *which* editing behaviours do so. These two scripts test
+that:
+
+```bash
+python src/novel/extract_edit_features.py   # edits -> interpretable features
+python src/novel/analyze_edit_recovery.py   # features -> predict style recovery
+```
+
+- `extract_edit_features.py` turns each task's keystroke log and a
+  draft-vs-final diff into 42 interpretable features (edit counts, timing
+  and pauses, words/sentences changed, punctuation, contractions,
+  first-person voice, lexical diversity). Output:
+  `data/processed/novel/edit_features.csv`.
+- `analyze_edit_recovery.py` predicts `change_after_editing` (the H1a
+  movement toward the author's own style) from those features under
+  participant-grouped cross-validation, comparing a *quantity* model
+  (how much was edited) against a *kind* model (what kind of edit), with
+  scenario and draft length as controls. Outputs:
+  `feature_target_correlations.csv`, `model_comparison.csv`,
+  `feature_importance.csv`, `novel_report.json`.
+
+**Finding:** editing features explain a meaningful share of style recovery
+(grouped-CV R² ≈ 0.27), and the *kind*-of-edit model generalizes better
+than the raw *quantity* model. The strongest predictors are how
+extensively the draft was rewritten (fraction of words changed,
+characters inserted) together with word-level replacement.
+
 ## Project Scope
 
-This README summarizes the research paper and its reported study. It
-does **not** claim that this repository contains a new implementation,
-trained model, or reproduction of the experiments. Add
-implementation-specific details, notebooks, source code, and dataset
-instructions here if your team develops them.
+This repository reproduces the paper's reported study on the released
+logs and adds one novel analysis (Stage 3). It is a course
+reproduction: method choices that deviate from the authors' exact
+procedure are documented in the scripts and in each run's
+`*_report.json` caveats.
 
 ## Reference
 

@@ -1,0 +1,117 @@
+{
+  "target": "change_after_editing",
+  "n_tasks": 324,
+  "n_participants": 81,
+  "cv": "GroupKFold(n_splits=5) grouped by participant",
+  "model_cv_r2": {
+    "M0_controls": -0.0593820206060911,
+    "M1_controls+quantity": 0.157280640676831,
+    "M2_controls+kind": 0.26649434977552744,
+    "M3_full": 0.15005860240448465
+  },
+  "quantity_r2_gain_over_controls": 0.2166626612829221,
+  "kind_r2_gain_over_controls": 0.32587637038161854,
+  "kind_beats_quantity": true,
+  "top_correlations": [
+    {
+      "feature": "frac_words_changed",
+      "group": "kind",
+      "spearman_r": 0.6831228707376403,
+      "spearman_p": 7.240001552021739e-46
+    },
+    {
+      "feature": "chars_inserted",
+      "group": "quantity",
+      "spearman_r": 0.6826325549692089,
+      "spearman_p": 8.867124825967252e-46
+    },
+    {
+      "feature": "edits_per_100_draft_chars",
+      "group": "quantity",
+      "spearman_r": 0.6665020875190567,
+      "spearman_p": 5.635705199281278e-43
+    },
+    {
+      "feature": "n_edits",
+      "group": "quantity",
+      "spearman_r": 0.6660878157983653,
+      "spearman_p": 6.6165782988934505e-43
+    },
+    {
+      "feature": "draft_final_similarity",
+      "group": "kind",
+      "spearman_r": -0.6653177226637162,
+      "spearman_p": 8.909944276916859e-43
+    },
+    {
+      "feature": "chars_deleted",
+      "group": "quantity",
+      "spearman_r": 0.5168311859731939,
+      "spearman_p": 1.5905305722107046e-23
+    },
+    {
+      "feature": "words_inserted",
+      "group": "kind",
+      "spearman_r": 0.5122355782145398,
+      "spearman_p": 4.519348158087513e-23
+    },
+    {
+      "feature": "words_replaced",
+      "group": "kind",
+      "spearman_r": 0.4148980974605962,
+      "spearman_p": 6.524291737269898e-15
+    }
+  ],
+  "top_importance": [
+    {
+      "feature": "draft_final_similarity",
+      "group": "kind",
+      "std_ridge_coef": -0.025775915855391775,
+      "perm_importance_r2": 2.3640737188538243
+    },
+    {
+      "feature": "n_edits",
+      "group": "quantity",
+      "std_ridge_coef": 0.01580170515497819,
+      "perm_importance_r2": 0.22222099008459056
+    },
+    {
+      "feature": "edits_per_100_draft_chars",
+      "group": "quantity",
+      "std_ridge_coef": -0.012202301276884438,
+      "perm_importance_r2": 0.01253419973092228
+    },
+    {
+      "feature": "frac_words_changed",
+      "group": "kind",
+      "std_ridge_coef": -0.00759913939561696,
+      "perm_importance_r2": 0.6525029138890838
+    },
+    {
+      "feature": "words_replaced",
+      "group": "kind",
+      "std_ridge_coef": -0.005425964240293415,
+      "perm_importance_r2": 0.5058123381392231
+    },
+    {
+      "feature": "first_person_change",
+      "group": "kind",
+      "std_ridge_coef": 0.0048985186178422254,
+      "perm_importance_r2": 0.006949598736069612
+    },
+    {
+      "feature": "sent_count_change",
+      "group": "kind",
+      "std_ridge_coef": 0.004456874161519039,
+      "perm_importance_r2": 0.2797430478428399
+    },
+    {
+      "feature": "len_change_ratio",
+      "group": "kind",
+      "std_ridge_coef": -0.0038080323917842594,
+      "perm_importance_r2": 0.30140361784794256
+    }
+  ],
+  "interpretation": "If kind_r2_gain_over_controls exceeds quantity_r2_gain_over_controls, the KIND of editing predicts personal-style recovery better than the AMOUNT of editing, which is the novel claim this analysis sets out to test.",
+  "seed": 42
+}
