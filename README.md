@@ -246,21 +246,21 @@ Outputs: `classifier_metrics.csv`, `classifier_3way_confusion.csv`,
 `detector_on_edited.csv`, `edit_vs_detector_correlations.csv`,
 `novel_classifier_report.json`.
 
-## Extended analyses (WP1–WP6)
+## Extended analyses
 
 Beyond the core reproduction and the edit-recovery study, the project
 includes a broad set of analyses spanning feature engineering, classical
 ML, deep learning, and visualization. All classifiers are evaluated with
 **GroupKFold by participant** (no author in both train and test).
 
-### WP1 — Figures (`src/analysis/make_figures.py`)
+### Figures (`src/analysis/make_figures.py`)
 Regenerates the paper's key figures from the saved outputs: before/after
 similarity (H1a/H1b), self-vs-LLM (H1c), own-vs-other (H1a′), homogeneity
 by text type (H2), the H3 perceived-vs-measured plot, an effect-size
 forest plot (ours vs paper), and LLM-cue rates by text type. Written to
 `reports/figures/`.
 
-### WP2 — Stylometric features (`src/features/build_stylometry.py`)
+### Stylometric features (`src/features/build_stylometry.py`)
 120 interpretable features per text (810 texts): function-word rates,
 POS mix, punctuation/readability, lexical diversity, and LLM-cue markers
 (em dashes, words like "delve"/"tapestry"). Finding: LLM-marker and
@@ -268,7 +268,7 @@ em-dash rates are ≈0 in control, high in drafts, and **partially reduced**
 in edited text — editing removes some AI cues but not all. Output:
 `data/processed/features/stylometry_features.csv`.
 
-### WP3 — Classical ML model zoo (`src/analysis/classical_ml.py`)
+### Classical ML model zoo (`src/analysis/classical_ml.py`)
 Seven classifiers (logreg, linear/RBF SVM, random forest, gradient
 boosting, kNN, naive Bayes) on both the LUAR embeddings and the stylometry
 features, for the 3-way style task and binary AI-detection.
@@ -277,11 +277,11 @@ features, for the 3-way style task and binary AI-detection.
 - **AI-detection (human vs LLM):** ≈**0.95** balanced accuracy / **0.98**
   AUC from stylometry features. (Embedding-based detection reads a perfect
   1.0 even with single-document controls — a confounded, not generalisable,
-  result; see WP note below.)
+  result; see the note below.)
 Outputs: `data/processed/analysis/classical_ml_model_comparison.csv`,
 ROC and confusion-matrix figures.
 
-### WP4 — Deep learning (`src/dl/`)
+### Deep learning (`src/dl/`)
 - `dl_models.py`: a PyTorch **MLP** on the embeddings (3-way) and an
   **LSTM over the raw keystroke edit stream** predicting whether an edit
   moved the text toward the author's own style — a time-series use of the
@@ -295,7 +295,7 @@ LUAR-embedding models, i.e. a purpose-built style embedding beats a quick
 raw-text transformer fine-tune on this style task. Outputs:
 `data/processed/dl/*.json`.
 
-### WP5 — Visualization & demographics (`src/analysis/`)
+### Visualization and demographics (`src/analysis/`)
 - `visualize_embeddings.py`: PCA and t-SNE of all texts coloured by type
   (shows post-edited text as its own region), plus style recovery by
   scenario (eulogy/letter recover most; wedding/condolence least).
@@ -303,7 +303,7 @@ raw-text transformer fine-tune on this style task. Outputs:
   education groups) — no significant differences at this sample size
   (exploratory, as in the paper).
 
-### WP6 — Own vs generic recovery (`src/novel/own_vs_generic_recovery.py`)
+### Own vs generic recovery (`src/novel/own_vs_generic_recovery.py`)
 The most robust novel result. Post-editing moves text toward the author's
 **own** control style significantly more than toward other authors'
 styles (specificity = +0.0095, p < .001, g = 0.65) — so the restored style
@@ -366,6 +366,6 @@ pages 43867--43895.
 
 **Fourth Dimension**
 
--   Rahul Behra
 -   Kashvi Patil
+-   Rahul Behra
 -   Soumili Basu
