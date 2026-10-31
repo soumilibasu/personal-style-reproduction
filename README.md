@@ -295,13 +295,10 @@ LUAR-embedding models, i.e. a purpose-built style embedding beats a quick
 raw-text transformer fine-tune on this style task. Outputs:
 `data/processed/dl/*.json`.
 
-### Visualization and demographics (`src/analysis/`)
+### Visualization (`src/analysis/`)
 - `visualize_embeddings.py`: PCA and t-SNE of all texts coloured by type
   (shows post-edited text as its own region), plus style recovery by
   scenario (eulogy/letter recover most; wedding/condolence least).
-- `demographics.py`: the paper's H5 (effort/success across gender and
-  education groups) — no significant differences at this sample size
-  (exploratory, as in the paper).
 
 ### Own vs generic recovery (`src/novel/own_vs_generic_recovery.py`)
 The most robust novel result. Post-editing moves text toward the author's
@@ -338,8 +335,7 @@ and the honest caveats). Run it last, after the pipeline.
   deep learning, and `make_report.py`).
 - `experiments/` — supplementary studies kept for completeness but not
   central findings: `style_classifier.py` (overlaps the classical zoo; also
-  carries the confounded embedding detector) and `demographics.py` (an
-  exploratory null).
+  carries the confounded embedding detector).
 - `requirements.txt` — pinned dependencies.
 - `reports/` — the generated `final_build_report.md` and `figures/`.
 
@@ -366,6 +362,6 @@ pages 43867--43895.
 
 **Fourth Dimension**
 
--   Kashvi Patil
 -   Rahul Behra
+-   Kashvi Patil
 -   Soumili Basu
