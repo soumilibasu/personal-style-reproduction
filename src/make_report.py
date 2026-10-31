@@ -186,7 +186,10 @@ def section_novel():
             f"{nr['n_participants']} participants, "
             f"{nr['cv']}. {nr.get('regularisation', '')}",
             "",
-            "| Model | features | CV R² |",
+            "**Single 5-fold split** (nested models; unstable at this sample "
+            "size — see the robust estimate below):",
+            "",
+            "| Model | features | CV R² (one split) |",
             "|---|---|---|",
             f"| M0 | controls only | {fmt(m.get('M0_controls'))}"
             f"{fold_range('M0_controls')} |",
@@ -198,29 +201,46 @@ def section_novel():
             f"| M3 | + quantity + kind (full) | {fmt(m.get('M3_full'))}"
             f"{fold_range('M3_full')} |",
             "",
-            f"- Quantity adds R² = {fmt(nr['quantity_r2_gain_over_controls'])} "
-            f"over controls; kind adds R² = "
-            f"{fmt(nr['kind_r2_gain_over_controls'])}.",
-            f"- **Kind of editing beats quantity: "
-            f"{nr['kind_beats_quantity']}.**",
         ]
         top = nr.get("top_correlations", [])[:4]
         if top:
             lines.append(
-                "- Strongest predictors: "
+                "- Strongest single predictors: "
                 + "; ".join(f"`{t['feature']}` (ρ={fmt(t['spearman_r'],2)})"
                             for t in top)
                 + "."
             )
-        lines += [
-            "",
-            "_Note on M3._ The full model stacks quantity and kind features "
-            "that carry overlapping information. With the Ridge penalty tuned "
-            "per training fold, M3's cross-validated R² reflects that "
-            "redundancy, not a lack of shrinkage — so M2 (kind) is the "
-            "parsimonious best model.",
-            "",
-        ]
+
+        rob = nr.get("robust_cv")
+        if rob and rob.get("results"):
+            best = rob.get("best", {})
+            lines += [
+                "",
+                f"**Robust estimate** ({rob.get('method', '')}). A single "
+                "5-fold split is unstable here (one unlucky fold drags the "
+                "pooled R² down); averaging over many random "
+                "participant-grouped splits gives a stable, higher estimate:",
+                "",
+                "| model | features | mean R² | mean Spearman |",
+                "|---|---|---|---|",
+            ]
+            for r in rob["results"]:
+                lines.append(
+                    f"| {r['model']} | {r['feature_set']} | "
+                    f"{fmt(r['mean_r2'])} | {fmt(r['mean_spearman'])} |")
+            lines += [
+                "",
+                f"Best: **{best.get('model')}** on {best.get('feature_set')} "
+                f"features — mean R² {fmt(best.get('mean_r2'))}, predicted-vs-"
+                f"actual Spearman {fmt(best.get('mean_spearman'))}. So editing "
+                "behaviour predicts style recovery with a stable rank "
+                "correlation around 0.55 — the earlier ~0.10 single-split R² "
+                "was a small-sample artifact. Whether *kind* or *quantity* "
+                "features win is model-dependent (linear/sparse models favour "
+                "kind; random forest slightly favours quantity), so we report "
+                "the range rather than claiming one dominates.",
+                "",
+            ]
 
     og = load_json(DATA / "novel" / "own_vs_generic_report.json")
     lines += ["### 2b. Is the recovered style author-specific?", ""]

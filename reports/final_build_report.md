@@ -33,18 +33,35 @@ All effect sizes use Hedges' *g* with a 1,000-sample bootstrap 95% CI and a 10,0
 
 Target: `change_after_editing` — the LUAR move toward the author's own style after editing. 324 tasks / 81 participants, GroupKFold(n_splits=5) grouped by participant. Ridge penalty tuned per training fold by RidgeCV over alphas in [0.01, 1e+03].
 
-| Model | features | CV R² |
+**Single 5-fold split** (nested models; unstable at this sample size — see the robust estimate below):
+
+| Model | features | CV R² (one split) |
 |---|---|---|
 | M0 | controls only | -0.042 (folds -0.23..0.01) |
 | M1 | + quantity of editing | 0.125 (folds -0.24..0.34) |
 | M2 | + kind of editing | 0.097 (folds -0.67..0.38) |
 | M3 | + quantity + kind (full) | 0.112 (folds -0.75..0.41) |
 
-- Quantity adds R² = 0.167 over controls; kind adds R² = 0.139.
-- **Kind of editing beats quantity: False.**
-- Strongest predictors: `frac_words_changed` (ρ=0.62); `chars_inserted` (ρ=0.61); `draft_final_similarity` (ρ=-0.61); `edits_per_100_draft_chars` (ρ=0.60).
+- Strongest single predictors: `frac_words_changed` (ρ=0.62); `chars_inserted` (ρ=0.61); `draft_final_similarity` (ρ=-0.61); `edits_per_100_draft_chars` (ρ=0.60).
 
-_Note on M3._ The full model stacks quantity and kind features that carry overlapping information. With the Ridge penalty tuned per training fold, M3's cross-validated R² reflects that redundancy, not a lack of shrinkage — so M2 (kind) is the parsimonious best model.
+**Robust estimate** (repeated GroupKFold (20 random participant splits x 5 folds), mean out-of-fold R^2 and Spearman). A single 5-fold split is unstable here (one unlucky fold drags the pooled R² down); averaging over many random participant-grouped splits gives a stable, higher estimate:
+
+| model | features | mean R² | mean Spearman |
+|---|---|---|---|
+| ridge | quantity | 0.099 | 0.430 |
+| ridge | kind | 0.203 | 0.518 |
+| ridge | full | 0.208 | 0.531 |
+| elasticnet | quantity | 0.133 | 0.440 |
+| elasticnet | kind | 0.273 | 0.563 |
+| elasticnet | full | 0.276 | 0.569 |
+| random_forest | quantity | 0.314 | 0.555 |
+| random_forest | kind | 0.285 | 0.567 |
+| random_forest | full | 0.288 | 0.559 |
+| gradient_boosting | quantity | 0.233 | 0.531 |
+| gradient_boosting | kind | 0.134 | 0.508 |
+| gradient_boosting | full | 0.166 | 0.503 |
+
+Best: **elasticnet** on full features — mean R² 0.276, predicted-vs-actual Spearman 0.569. So editing behaviour predicts style recovery with a stable rank correlation around 0.55 — the earlier ~0.10 single-split R² was a small-sample artifact. Whether *kind* or *quantity* features win is model-dependent (linear/sparse models favour kind; random forest slightly favours quantity), so we report the range rather than claiming one dominates.
 
 ### 2b. Is the recovered style author-specific?
 

@@ -42,6 +42,113 @@
       0.21305777417557037
     ]
   },
+  "robust_cv": {
+    "method": "repeated GroupKFold (20 random participant splits x 5 folds), mean out-of-fold R^2 and Spearman",
+    "results": [
+      {
+        "model": "ridge",
+        "feature_set": "quantity",
+        "mean_r2": 0.09867336054446549,
+        "sd_r2": 0.06756027121823718,
+        "mean_spearman": 0.42967172780418367,
+        "sd_spearman": 0.03396233050953967
+      },
+      {
+        "model": "ridge",
+        "feature_set": "kind",
+        "mean_r2": 0.20272479090273182,
+        "sd_r2": 0.05365347873844075,
+        "mean_spearman": 0.5179045981531004,
+        "sd_spearman": 0.03185440498726002
+      },
+      {
+        "model": "ridge",
+        "feature_set": "full",
+        "mean_r2": 0.20822195197407325,
+        "sd_r2": 0.058361462115090426,
+        "mean_spearman": 0.5305958735511714,
+        "sd_spearman": 0.02564809714029248
+      },
+      {
+        "model": "elasticnet",
+        "feature_set": "quantity",
+        "mean_r2": 0.13307301962244528,
+        "sd_r2": 0.10876081620741332,
+        "mean_spearman": 0.4403643488616676,
+        "sd_spearman": 0.040399254597139486
+      },
+      {
+        "model": "elasticnet",
+        "feature_set": "kind",
+        "mean_r2": 0.27287072271839163,
+        "sd_r2": 0.025406157869179585,
+        "mean_spearman": 0.5627116310216209,
+        "sd_spearman": 0.015184203274835894
+      },
+      {
+        "model": "elasticnet",
+        "feature_set": "full",
+        "mean_r2": 0.27601485253502406,
+        "sd_r2": 0.03154439550966822,
+        "mean_spearman": 0.5690755183881863,
+        "sd_spearman": 0.013238951086745202
+      },
+      {
+        "model": "random_forest",
+        "feature_set": "quantity",
+        "mean_r2": 0.31368318516744675,
+        "sd_r2": 0.02751934873638142,
+        "mean_spearman": 0.5552098511818038,
+        "sd_spearman": 0.01238940239218984
+      },
+      {
+        "model": "random_forest",
+        "feature_set": "kind",
+        "mean_r2": 0.2845041852793077,
+        "sd_r2": 0.024241254199797786,
+        "mean_spearman": 0.5673746237050691,
+        "sd_spearman": 0.010017766284566427
+      },
+      {
+        "model": "random_forest",
+        "feature_set": "full",
+        "mean_r2": 0.2881778731060419,
+        "sd_r2": 0.027764103483314394,
+        "mean_spearman": 0.5593337591319159,
+        "sd_spearman": 0.009874725351489009
+      },
+      {
+        "model": "gradient_boosting",
+        "feature_set": "quantity",
+        "mean_r2": 0.2325763157496072,
+        "sd_r2": 0.04243017875669658,
+        "mean_spearman": 0.5309265883078071,
+        "sd_spearman": 0.01909191210503062
+      },
+      {
+        "model": "gradient_boosting",
+        "feature_set": "kind",
+        "mean_r2": 0.1335376104826268,
+        "sd_r2": 0.03914775368346187,
+        "mean_spearman": 0.5079391147040055,
+        "sd_spearman": 0.015906514765149822
+      },
+      {
+        "model": "gradient_boosting",
+        "feature_set": "full",
+        "mean_r2": 0.16553582215502968,
+        "sd_r2": 0.04966585758113336,
+        "mean_spearman": 0.5032266495766249,
+        "sd_spearman": 0.022439538089175783
+      }
+    ],
+    "best": {
+      "model": "elasticnet",
+      "feature_set": "full",
+      "mean_r2": 0.27601485253502406,
+      "mean_spearman": 0.5690755183881863
+    }
+  },
   "full_model_alpha": 137.3823795883264,
   "regularisation": "Ridge penalty tuned per training fold by RidgeCV over alphas in [0.01, 1e+03].",
   "top_correlations": [

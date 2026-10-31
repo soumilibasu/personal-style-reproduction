@@ -51,9 +51,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy import stats
+from sklearn.base import clone
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.inspection import permutation_importance
-from sklearn.linear_model import RidgeCV
+from sklearn.linear_model import ElasticNetCV, RidgeCV
 from sklearn.model_selection import GroupKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -190,6 +192,80 @@ def grouped_r2(df, numeric_features, categorical_features):
     return r2, mae, oof, fold_r2, fold_alphas
 
 
+# ---------------------------------------------------------------------------
+# Robust model comparison: repeated participant-grouped CV + a model zoo
+# ---------------------------------------------------------------------------
+# A single 5-fold GroupKFold split at this sample size (81 participants, ~16
+# per fold) is unstable: one unlucky fold dominates the pooled R^2. We instead
+# average over many *random* participant-grouped splits (repeated GroupKFold),
+# which gives a stable estimate, and compare several model families. We report
+# both out-of-fold R^2 and out-of-fold Spearman rank correlation between the
+# predicted and actual recovery -- the rank correlation is robust to the
+# outlier folds that make R^2 brittle on a small, noisy target. Grouping by
+# participant is kept throughout (no author in train and test), so this is an
+# honest estimate of generalisation to unseen people, not a leakage boost.
+N_REPEATS = 20
+
+
+def model_zoo():
+    return {
+        "ridge": RidgeCV(alphas=ALPHAS),
+        "elasticnet": ElasticNetCV(
+            l1_ratio=[0.1, 0.5, 0.9], cv=3, max_iter=10000, random_state=SEED),
+        "random_forest": RandomForestRegressor(
+            n_estimators=400, min_samples_leaf=3, random_state=SEED, n_jobs=-1),
+        "gradient_boosting": GradientBoostingRegressor(random_state=SEED),
+    }
+
+
+def _preprocessor(numeric_features, categorical_features):
+    transformers = []
+    if numeric_features:
+        transformers.append(("num", StandardScaler(), numeric_features))
+    if categorical_features:
+        transformers.append((
+            "cat", OneHotEncoder(handle_unknown="ignore"), categorical_features))
+    return ColumnTransformer(transformers)
+
+
+def _random_group_folds(groups, n_splits, rng):
+    """Assign each participant to one of n_splits folds at random."""
+    uniq = np.array(sorted(pd.unique(groups)))
+    rng.shuffle(uniq)
+    fold_of = {g: i % n_splits for i, g in enumerate(uniq)}
+    return np.array([fold_of[g] for g in groups])
+
+
+def repeated_grouped_eval(df, numeric_features, categorical_features,
+                          estimator, n_repeats=N_REPEATS, n_splits=N_SPLITS,
+                          seed=SEED):
+    """Mean out-of-fold R^2 and Spearman over `n_repeats` random grouped
+    splits. Returns (mean_r2, sd_r2, mean_spearman, sd_spearman)."""
+    X = df[numeric_features + categorical_features].reset_index(drop=True)
+    y = df[TARGET].to_numpy()
+    groups = df["participant_id"].to_numpy()
+    pre = _preprocessor(numeric_features, categorical_features)
+    rng = np.random.default_rng(seed)
+
+    r2s, rhos = [], []
+    for _ in range(n_repeats):
+        folds = _random_group_folds(groups, n_splits, rng)
+        oof = np.full(len(y), np.nan)
+        for f in range(n_splits):
+            tr = folds != f
+            te = folds == f
+            pipe = Pipeline([("pre", clone(pre)), ("model", clone(estimator))])
+            pipe.fit(X[tr], y[tr])
+            oof[te] = pipe.predict(X[te])
+        ss_res = float(np.sum((y - oof) ** 2))
+        ss_tot = float(np.sum((y - np.mean(y)) ** 2))
+        r2s.append(1 - ss_res / ss_tot if ss_tot > 0 else np.nan)
+        rho = stats.spearmanr(oof, y).correlation
+        rhos.append(rho)
+    return (float(np.nanmean(r2s)), float(np.nanstd(r2s)),
+            float(np.nanmean(rhos)), float(np.nanstd(rhos)))
+
+
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
@@ -239,6 +315,29 @@ def main():
         })
     model_comparison = pd.DataFrame(model_rows)
     model_comparison.to_csv(OUT_DIR / "model_comparison.csv", index=False)
+
+    # ----- 2b. Robust model comparison (repeated grouped CV + zoo) -------
+    feature_sets = {
+        "quantity": CONTROL_NUMERIC + QUANTITY_FEATURES,
+        "kind": CONTROL_NUMERIC + KIND_FEATURES,
+        "full": all_numeric,
+    }
+    robust_rows = []
+    for est_name, est in model_zoo().items():
+        for fs_name, num_f in feature_sets.items():
+            mr2, sr2, mrho, srho = repeated_grouped_eval(
+                df, num_f, CONTROL_CATEGORICAL, est)
+            robust_rows.append({
+                "model": est_name,
+                "feature_set": fs_name,
+                "mean_r2": mr2,
+                "sd_r2": sr2,
+                "mean_spearman": mrho,
+                "sd_spearman": srho,
+            })
+    robust = pd.DataFrame(robust_rows)
+    robust.to_csv(OUT_DIR / "model_comparison_robust.csv", index=False)
+    best_robust = robust.sort_values("mean_spearman", ascending=False).iloc[0]
 
     # ----- 3. Importance from the full model -----------------------------
     # Standardised Ridge coefficients (numeric features only, so the
@@ -311,6 +410,19 @@ def main():
         "kind_beats_quantity": bool(kind_gain > quantity_gain),
         "model_fold_r2": {k: [float(v) for v in vs]
                           for k, vs in fold_r2_by_model.items()},
+        "robust_cv": {
+            "method": (
+                f"repeated GroupKFold ({N_REPEATS} random participant splits "
+                f"x {N_SPLITS} folds), mean out-of-fold R^2 and Spearman"
+            ),
+            "results": robust_rows,
+            "best": {
+                "model": best_robust["model"],
+                "feature_set": best_robust["feature_set"],
+                "mean_r2": float(best_robust["mean_r2"]),
+                "mean_spearman": float(best_robust["mean_spearman"]),
+            },
+        },
         "full_model_alpha": full_model_alpha,
         "regularisation": (
             "Ridge penalty tuned per training fold by RidgeCV over "
@@ -339,6 +451,12 @@ def main():
     print(f"\n  Quantity adds R^2 = {quantity_gain:+.4f} over controls")
     print(f"  Kind     adds R^2 = {kind_gain:+.4f} over controls")
     print(f"  Kind beats quantity: {report['kind_beats_quantity']}")
+
+    print(f"\n=== Robust comparison (repeated grouped CV, {N_REPEATS}x) ===")
+    print(robust.round(3).to_string(index=False))
+    print(f"\n  Best: {best_robust['model']} on '{best_robust['feature_set']}' "
+          f"features -> mean R^2 {best_robust['mean_r2']:.3f}, "
+          f"mean Spearman {best_robust['mean_spearman']:.3f}")
 
     print("\n=== Strongest feature-target correlations (Spearman) ===")
     print(corr.head(8).to_string(index=False))

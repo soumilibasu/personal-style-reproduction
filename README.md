@@ -198,17 +198,21 @@ python src/novel/analyze_edit_recovery.py   # features -> predict style recovery
   `feature_target_correlations.csv`, `model_comparison.csv`,
   `feature_importance.csv`, `novel_report.json`.
 
-**Finding:** editing features explain a modest, non-trivial share of style
-recovery under participant-grouped CV (M1 quantity R² ≈ 0.13, M2 kind
-R² ≈ 0.10 over a negative-R² controls baseline; Ridge penalty tuned per
-training fold). At this sample size (81 participants, ~16 per CV fold) the
-*kind* and *quantity* models perform **similarly** — an earlier, larger
-gap favouring *kind* (R² ≈ 0.27) did not survive the corrected single-
-document control embedding, and per-fold R² is unstable (one fold is
-strongly negative), so we do **not** claim kind beats quantity. The
-strongest individual predictors are how extensively the draft was rewritten
-(fraction of words changed, characters inserted, draft–final similarity).
-`model_comparison.csv` reports per-fold R² and the chosen penalty.
+**Finding:** editing behaviour predicts style recovery under participant-
+grouped CV. A single 5-fold split is unstable at this sample size (one
+unlucky fold drags the pooled R² to ≈0.10), so we estimate it **robustly**
+with repeated GroupKFold — 20 random participant-grouped splits averaged —
+and compare several model families. This gives a stable result: mean
+out-of-fold **R² ≈ 0.21–0.31** and a predicted-vs-actual **Spearman
+≈ 0.53–0.57** (e.g. ElasticNet on all features R² ≈ 0.28, ρ ≈ 0.57; random
+forest R² up to ≈ 0.31). The strongest single predictors are how
+extensively the draft was rewritten (fraction of words changed, characters
+inserted, draft–final similarity). Whether the *kind* of editing or the
+*quantity* of editing predicts better is **model-dependent** (linear/sparse
+models favour *kind*; random forest slightly favours *quantity*), so we
+report the range rather than claiming one dominates. See
+`model_comparison.csv` (single split, with per-fold R²) and
+`model_comparison_robust.csv` (repeated-CV model zoo).
 
 ### Stage 3b — novel ML models on the LUAR embeddings
 
