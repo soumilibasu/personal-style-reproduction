@@ -130,13 +130,11 @@ cosine to their individual control texts.
 python src/analysis/analyze_hypotheses.py
 ```
 
-This single script reproduces **H1a** (also available standalone in
-`src/analysis/analyze_h1a.py`) and adds **H1a', H1b, H1c, H2a, H2b, H2c,
-and H3**. Every stylistic-similarity hypothesis uses cosine similarity of
-LUAR-MUD embeddings; each is tested with a 10,000-sample permutation test
-and Hedges' *g* with a bootstrap 95% CI, matching the paper and the
-existing `analyze_h1a.py`. H3 reports the correlation between perceived
-and measured self-similarity.
+This single script reproduces **H1a** and adds **H1a', H1b, H1c, H2a, H2b,
+H2c, and H3**. Every stylistic-similarity hypothesis uses cosine similarity
+of LUAR-MUD embeddings; each is tested with a 10,000-sample permutation test
+and Hedges' *g* with a bootstrap 95% CI, matching the paper. H3 reports the
+correlation between perceived and measured self-similarity.
 
 Outputs (in `data/processed/hypotheses/`):
 
