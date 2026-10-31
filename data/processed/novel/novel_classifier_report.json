@@ -1,0 +1,98 @@
+{
+  "n_texts": 810,
+  "n_participants": 81,
+  "cv": "GroupKFold(5) by participant",
+  "three_way_classifier": {
+    "logreg": {
+      "accuracy": 0.674074074074074,
+      "balanced_accuracy": 0.7078189300411523,
+      "macro_f1": 0.7078345528751141,
+      "post_edited_pred_human_frac": 0.05246913580246913,
+      "post_edited_pred_llm_frac": 0.3734567901234568,
+      "post_edited_pred_edited_frac": 0.5740740740740741,
+      "precision_post_edited": 0.6038961038961039,
+      "recall_post_edited": 0.5740740740740741
+    },
+    "random_forest": {
+      "accuracy": 0.6851851851851852,
+      "balanced_accuracy": 0.7181069958847736,
+      "macro_f1": 0.7183720072457235,
+      "post_edited_pred_human_frac": 0.043209876543209874,
+      "post_edited_pred_llm_frac": 0.4228395061728395,
+      "post_edited_pred_edited_frac": 0.5339506172839507,
+      "precision_post_edited": 0.6245487364620939,
+      "recall_post_edited": 0.5339506172839507
+    }
+  },
+  "llm_origin_detector": {
+    "logreg": {
+      "model": "logreg",
+      "detector_auc_control_vs_draft": 0.9974089315653102,
+      "detector_accuracy_control_vs_draft": 0.9835390946502057,
+      "mean_p_llm_drafts": 0.9891382529477809,
+      "mean_p_llm_edited": 0.8767859521968571,
+      "frac_edited_flagged_llm": 0.8919753086419753,
+      "n_edited": 324
+    },
+    "random_forest": {
+      "model": "random_forest",
+      "detector_auc_control_vs_draft": 0.9987997256515776,
+      "detector_accuracy_control_vs_draft": 0.9794238683127572,
+      "mean_p_llm_drafts": 0.914675925925926,
+      "mean_p_llm_edited": 0.820787037037037,
+      "frac_edited_flagged_llm": 0.9382716049382716,
+      "n_edited": 324
+    }
+  },
+  "chance_accuracy_3way": 0.3333333333333333,
+  "interpretation": "Analysis A tests whether post-edited text is a learnable distinct class and where it is confused; B measures residual LLM style via a trained detector; C links detected LLM-ness to specific editing behaviours.",
+  "caveats": [
+    "The three-way classifier uses class-weight balancing for the 81/324/324 imbalance; balanced accuracy is the fair metric (chance = 0.333). All scores are out-of-fold under GroupKFold by participant, i.e. on unseen authors.",
+    "The LLM-origin detector reaches AUC ~1.0 partly as an artifact: control texts are a COMBINED embedding of two writings while drafts and edited texts are single-text embeddings, so the detector also separates 'combined vs single'. Combined with the fact that an edited text is derived from its own draft, this inflates how LLM-like edited text looks. Read the detector as corroborating H1c (edited stays close to LLM) directionally, not as an exact residual-LLM rate; a clean test needs individually embedded control texts (re-embedding)."
+  ],
+  "seed": 42,
+  "top_edit_correlations_with_detected_llm": [
+    {
+      "feature": "frac_words_changed",
+      "spearman_r_with_p_llm": -0.4692079151618276,
+      "spearman_p": 3.8452384853126483e-19,
+      "abs_r": 0.4692079151618276,
+      "direction": "reduces LLM-ness"
+    },
+    {
+      "feature": "draft_final_similarity",
+      "spearman_r_with_p_llm": 0.4671284601042762,
+      "spearman_p": 5.769775076217502e-19,
+      "abs_r": 0.4671284601042762,
+      "direction": "increases LLM-ness"
+    },
+    {
+      "feature": "chars_inserted",
+      "spearman_r_with_p_llm": -0.46224922778433375,
+      "spearman_p": 1.4790787132176917e-18,
+      "abs_r": 0.46224922778433375,
+      "direction": "reduces LLM-ness"
+    },
+    {
+      "feature": "n_edits",
+      "spearman_r_with_p_llm": -0.45960308607979855,
+      "spearman_p": 2.4490150468084653e-18,
+      "abs_r": 0.45960308607979855,
+      "direction": "reduces LLM-ness"
+    },
+    {
+      "feature": "words_replaced",
+      "spearman_r_with_p_llm": -0.3637478844560675,
+      "spearman_p": 1.4288396510900465e-11,
+      "abs_r": 0.3637478844560675,
+      "direction": "reduces LLM-ness"
+    },
+    {
+      "feature": "contraction_change",
+      "spearman_r_with_p_llm": -0.3044897317125354,
+      "spearman_p": 2.231855595365358e-08,
+      "abs_r": 0.3044897317125354,
+      "direction": "reduces LLM-ness"
+    }
+  ]
+}

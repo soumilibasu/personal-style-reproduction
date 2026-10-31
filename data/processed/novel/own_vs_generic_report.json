@@ -1,0 +1,33 @@
+{
+  "n_tasks": 324,
+  "specificity": {
+    "mean_own_gain": 0.011715590503988883,
+    "mean_other_gain": 0.0022239392235788432,
+    "mean_specificity": 0.00949165128041004,
+    "permutation_p": 9.999000099990002e-05,
+    "hedges_g_own_vs_other": 0.6501345331968559,
+    "ci_95": [
+      0.007601348770181939,
+      0.011479300563353233
+    ]
+  },
+  "models": [
+    {
+      "target": "own_gain",
+      "features": "edit features",
+      "cv_r2": 0.08140161768891374
+    },
+    {
+      "target": "other_gain",
+      "features": "edit features",
+      "cv_r2": 0.08492160812681204
+    },
+    {
+      "target": "own_gain",
+      "features": "edit features + other_gain",
+      "cv_r2": 0.34398935195307856
+    }
+  ],
+  "interpretation": "Positive specificity means post-editing moves text toward the author's OWN control style more than toward other authors' styles (not generic humanisation). If edit features predict own_gain better than other_gain, the restored style is author-specific. NOTE: the 'edit features + other_gain' model includes other_gain as a predictor, so its R^2 answers a different question (how much author-specific signal is left once the generic component is accounted for) and is NOT directly comparable to the edit-features-only R^2 values above.",
+  "seed": 42
+}

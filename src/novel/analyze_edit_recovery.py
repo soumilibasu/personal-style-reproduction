@@ -53,8 +53,8 @@ import pandas as pd
 from scipy import stats
 from sklearn.compose import ColumnTransformer
 from sklearn.inspection import permutation_importance
-from sklearn.linear_model import Ridge
-from sklearn.model_selection import GroupKFold, cross_val_predict
+from sklearn.linear_model import RidgeCV
+from sklearn.model_selection import GroupKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -65,6 +65,12 @@ OUT_DIR = DATA_DIR / "novel"
 TARGET = "change_after_editing"
 SEED = 42
 N_SPLITS = 5
+
+# Ridge penalty candidates. The strength is tuned by RidgeCV *inside* each
+# training fold, so a model with many collinear features (M3) can regularise
+# them away instead of over-fitting; this keeps the nested-model comparison
+# fair and stops the full model from collapsing purely for lack of shrinkage.
+ALPHAS = np.logspace(-2, 3, 30)
 
 # Feature groups ------------------------------------------------------------
 CONTROL_NUMERIC = ["len_draft_chars"]
@@ -147,25 +153,41 @@ def make_pipeline(numeric_features, categorical_features):
             categorical_features,
         ))
     pre = ColumnTransformer(transformers)
-    return Pipeline([("pre", pre), ("model", Ridge(alpha=1.0))])
+    return Pipeline([("pre", pre), ("model", RidgeCV(alphas=ALPHAS))])
 
 
 def grouped_r2(df, numeric_features, categorical_features):
-    """Out-of-fold R^2 and MAE under GroupKFold (grouped by participant)."""
+    """Out-of-fold R^2/MAE, per-fold R^2, and per-fold chosen alpha.
+
+    GroupKFold keeps every participant in a single fold. Within each training
+    fold RidgeCV selects the penalty by internal cross-validation, so the
+    regularisation strength is chosen without ever seeing the held-out
+    participants. Per-fold R^2 is reported so the stability of each model
+    (not just the pooled number) can be read directly.
+    """
     X = df[numeric_features + categorical_features]
     y = df[TARGET].to_numpy()
     groups = df["participant_id"].to_numpy()
-
-    pipe = make_pipeline(numeric_features, categorical_features)
     cv = GroupKFold(n_splits=N_SPLITS)
 
-    preds = cross_val_predict(pipe, X, y, groups=groups, cv=cv)
+    oof = np.full(len(y), np.nan)
+    fold_r2, fold_alphas = [], []
+    for train_idx, test_idx in cv.split(X, y, groups):
+        pipe = make_pipeline(numeric_features, categorical_features)
+        pipe.fit(X.iloc[train_idx], y[train_idx])
+        pred = pipe.predict(X.iloc[test_idx])
+        oof[test_idx] = pred
+        # Per-fold R^2 uses the TRAIN mean as the baseline (honest OOF).
+        ss_res = float(np.sum((y[test_idx] - pred) ** 2))
+        ss_tot = float(np.sum((y[test_idx] - np.mean(y[train_idx])) ** 2))
+        fold_r2.append(1 - ss_res / ss_tot if ss_tot > 0 else np.nan)
+        fold_alphas.append(float(pipe.named_steps["model"].alpha_))
 
-    ss_res = float(np.sum((y - preds) ** 2))
+    ss_res = float(np.sum((y - oof) ** 2))
     ss_tot = float(np.sum((y - np.mean(y)) ** 2))
     r2 = 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
-    mae = float(np.mean(np.abs(y - preds)))
-    return r2, mae, preds
+    mae = float(np.mean(np.abs(y - oof)))
+    return r2, mae, oof, fold_r2, fold_alphas
 
 
 def main():
@@ -201,13 +223,19 @@ def main():
     }
 
     model_rows = []
+    fold_r2_by_model = {}
     for name, (num_f, cat_f) in models.items():
-        r2, mae, _ = grouped_r2(df, num_f, cat_f)
+        r2, mae, _, fold_r2, fold_alphas = grouped_r2(df, num_f, cat_f)
+        fold_r2_by_model[name] = fold_r2
         model_rows.append({
             "model": name,
             "n_numeric_features": len(num_f),
             "cv_r2": r2,
             "cv_mae": mae,
+            "fold_r2_min": float(np.nanmin(fold_r2)),
+            "fold_r2_max": float(np.nanmax(fold_r2)),
+            "fold_r2_std": float(np.nanstd(fold_r2)),
+            "median_alpha": float(np.median(fold_alphas)),
         })
     model_comparison = pd.DataFrame(model_rows)
     model_comparison.to_csv(OUT_DIR / "model_comparison.csv", index=False)
@@ -223,6 +251,7 @@ def main():
     full_pipe.fit(X, y)
 
     ridge = full_pipe.named_steps["model"]
+    full_model_alpha = float(ridge.alpha_)
     feature_names = full_pipe.named_steps["pre"].get_feature_names_out()
     coef_by_name = dict(zip(feature_names, ridge.coef_))
 
@@ -280,13 +309,24 @@ def main():
         "quantity_r2_gain_over_controls": float(quantity_gain),
         "kind_r2_gain_over_controls": float(kind_gain),
         "kind_beats_quantity": bool(kind_gain > quantity_gain),
+        "model_fold_r2": {k: [float(v) for v in vs]
+                          for k, vs in fold_r2_by_model.items()},
+        "full_model_alpha": full_model_alpha,
+        "regularisation": (
+            "Ridge penalty tuned per training fold by RidgeCV over "
+            f"alphas in [{ALPHAS.min():.3g}, {ALPHAS.max():.3g}]."
+        ),
         "top_correlations": top_corr,
         "top_importance": top_imp,
         "interpretation": (
             "If kind_r2_gain_over_controls exceeds "
             "quantity_r2_gain_over_controls, the KIND of editing predicts "
             "personal-style recovery better than the AMOUNT of editing, "
-            "which is the novel claim this analysis sets out to test."
+            "which is the novel claim this analysis sets out to test. The "
+            "full model (M3) stacks quantity and kind features that carry "
+            "overlapping information; with the penalty tuned per fold its "
+            "cross-validated R^2 reflects that redundancy rather than a lack "
+            "of shrinkage."
         ),
         "seed": SEED,
     }

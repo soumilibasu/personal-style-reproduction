@@ -1,0 +1,15 @@
+# Core analysis (hypotheses, novel edit-recovery, classical ML, figures)
+numpy==2.4.3
+pandas==3.0.1
+scipy==1.17.1
+scikit-learn==1.9.1
+matplotlib==3.11.1
+
+# Stylometry feature engineering
+nltk==3.10.4
+textstat==0.7.13
+
+# LUAR-MUD style embeddings + deep-learning experiments
+torch==2.14.1
+transformers==5.21.0
+einops==0.8.2          # required by the LUAR-MUD custom model code

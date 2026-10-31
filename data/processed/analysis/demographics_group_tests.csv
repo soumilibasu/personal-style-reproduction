@@ -1,0 +1,9 @@
+comparison,metric,n_woman,n_man,median_woman,median_man,mannwhitney_u,p_value,n_degree,n_no_degree,median_degree,median_no_degree
+gender: woman vs man,mean_editing_time_s,55.0,26.0,168.477836728096,181.78846886754036,753.0,0.7044235273043817,,,,
+gender: woman vs man,mean_n_edits,55.0,26.0,86.75,84.75,689.0,0.7964339299448524,,,,
+gender: woman vs man,mean_frac_words_changed,55.0,26.0,0.08914481848702167,0.0934811330699411,654.5,0.5438665491033421,,,,
+gender: woman vs man,mean_own_gain,55.0,26.0,0.007908339595568425,0.006926674505354287,759.0,0.6598987589170899,,,,
+education_bin: degree vs no_degree,mean_editing_time_s,,,,,326.0,0.682417951738133,71.0,10.0,168.477836728096,189.53145736455917
+education_bin: degree vs no_degree,mean_n_edits,,,,,346.0,0.9028726465075155,71.0,10.0,86.75,99.5
+education_bin: degree vs no_degree,mean_frac_words_changed,,,,,352.5,0.9770929159548222,71.0,10.0,0.08914481848702167,0.11536240463790842
+education_bin: degree vs no_degree,mean_own_gain,,,,,318.0,0.6002650286653965,71.0,10.0,0.007171010815880101,0.016760354660832238

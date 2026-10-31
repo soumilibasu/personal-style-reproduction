@@ -16,11 +16,12 @@ All stylistic-similarity hypotheses use the cosine similarity between
 LUAR-MUD embeddings, exactly as in the paper (Section 5 / Appendix B.2).
 We reuse the embeddings produced by src/embed_luar.py:
 
-    control_reference : one combined embedding of each participant's two
-                        unassisted (control) writings. The paper also
-                        represents each participant's control writing as
-                        a single point, so this matches its homogeneity
-                        analysis (one control point per participant).
+    control_reference : each participant's unassisted (control) writings,
+                        embedded individually as single-document style
+                        vectors (two per participant). Similarity to a
+                        participant's own control writing is the mean cosine
+                        to their individual control texts; the same texts are
+                        used for the between-author homogeneity comparison.
     ai_draft          : the LLM-generated draft shown for a treatment
                         task (our stand-in for "LLM-generated text").
     edited_text       : the participant's post-edited final text.
@@ -260,6 +261,27 @@ def mean_sim_to_other_participants(target_matrix, target_pids,
     return np.nanmean(masked, axis=1)
 
 
+def mean_sim_to_own_participant(target_matrix, target_pids,
+                                ref_matrix, ref_pids):
+    """Mean cosine of each target text to the SAME participant's reference
+    texts. With two control texts per participant this is the mean cosine to
+    each of them -- the standard way to score similarity to an author's own
+    writing, and consistent with the leave-own-out 'other' similarities and
+    with own_vs_generic_recovery.py (we score similarity to each individual
+    control text, not to a single averaged control vector)."""
+    t = unit_rows(target_matrix)
+    r = unit_rows(ref_matrix)
+
+    sim = t @ r.T
+
+    target_pids = np.asarray(target_pids)
+    ref_pids = np.asarray(ref_pids)
+    same = target_pids[:, None] == ref_pids[None, :]
+
+    masked = np.where(same, sim, np.nan)
+    return np.nanmean(masked, axis=1)
+
+
 def pairwise_similarities_cross_participant(matrix, pids):
     """All pairwise cosine similarities between texts from DIFFERENT
     participants.
@@ -346,13 +368,14 @@ def build_views(vectors, index):
     draft_rows, draft_mat = subset("ai_draft")
     edited_rows, edited_mat = subset("edited_text")
 
-    # One control reference per participant -> dict and aligned matrix.
-    if control_rows["participant_id"].duplicated().any():
-        raise ValueError("More than one control reference per participant.")
+    # Each control text is embedded individually (one single-document style
+    # vector per unassisted writing, like the drafts and edited texts). Every
+    # similarity to a participant's own control writing is the mean cosine to
+    # that participant's individual control texts (see task_table); the same
+    # individual texts drive the between-author homogeneity (H2a) and
+    # leave-own-out (H1a', H2c) comparisons, so all control similarities use
+    # single-text granularity that matches the drafts and edited texts.
     control_pids = control_rows["participant_id"].to_numpy()
-    control_vec_by_pid = {
-        pid: control_mat[i] for i, pid in enumerate(control_pids)
-    }
 
     # Draft and edited aligned per task; also participant-level centroids.
     def participant_centroids(rows, mat):
@@ -372,7 +395,6 @@ def build_views(vectors, index):
         "control_rows": control_rows,
         "control_mat": control_mat,
         "control_pids": control_pids,
-        "control_vec_by_pid": control_vec_by_pid,
         "draft_rows": draft_rows,
         "draft_mat": draft_mat,
         "edited_rows": edited_rows,
@@ -407,19 +429,16 @@ def task_table(views):
     draft_pids = draft_rows["participant_id"].to_numpy()
     edited_pids = edited_rows["participant_id"].to_numpy()
 
-    # Similarity to own combined control reference.
-    control_vec_by_pid = views["control_vec_by_pid"]
-    control_aligned_for_draft = unit_rows(
-        np.stack([control_vec_by_pid[p] for p in draft_pids])
-    )
-    control_aligned_for_edited = unit_rows(
-        np.stack([control_vec_by_pid[p] for p in edited_pids])
-    )
-    draft_u = unit_rows(draft_mat)
-    edited_u = unit_rows(edited_mat)
-
-    draft_to_control = np.sum(draft_u * control_aligned_for_draft, axis=1)
-    edited_to_control = np.sum(edited_u * control_aligned_for_edited, axis=1)
+    # Similarity to the author's own control writing: mean cosine to each of
+    # the participant's individual control texts (not cosine to an averaged
+    # control vector), matching mean_sim_to_other_participants and
+    # own_vs_generic_recovery.py.
+    control_mat = views["control_mat"]
+    control_pids_all = views["control_pids"]
+    draft_to_control = mean_sim_to_own_participant(
+        draft_mat, draft_pids, control_mat, control_pids_all)
+    edited_to_control = mean_sim_to_own_participant(
+        edited_mat, edited_pids, control_mat, control_pids_all)
 
     # Similarity to the LLM style class (other participants' drafts).
     draft_to_llm = mean_sim_to_other_participants(
@@ -545,7 +564,7 @@ def main():
 
     # ----- H2a: homogeneity edited vs control ----------------------------
     # Between-participant pairwise similarity on the individual texts
-    # (matches Figure 6; one control point per participant is all we have).
+    # (matches Figure 6), using each participant's individual control texts.
     control_pairs = pairwise_similarities_cross_participant(
         views["control_mat"], views["control_pids"]
     )
@@ -703,9 +722,10 @@ def main():
             "(leave-own-participant-out).",
             "H1b uses the LUAR style measure only; PANGRAM scores are not "
             "available in this dataset.",
-            "Control writing is represented by one combined embedding per "
-            "participant, matching the paper's one-point-per-participant "
-            "homogeneity analysis.",
+            "Each control text is embedded individually (single-document "
+            "style vector); the self-similarity hypotheses average a "
+            "participant's control vectors into one reference point, and the "
+            "homogeneity analysis uses the individual control texts.",
         ],
     }
     with (OUT_DIR / "hypotheses_report.json").open("w", encoding="utf-8") as fh:

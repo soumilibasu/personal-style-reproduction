@@ -1,0 +1,4 @@
+target,features,cv_r2
+own_gain,edit features,0.08140161768891374
+other_gain,edit features,0.08492160812681204
+own_gain,edit features + other_gain,0.34398935195307856

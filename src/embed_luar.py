@@ -123,26 +123,34 @@ def build_documents(df):
                 f"{len(treatments)} treatment tasks."
             )
 
-        # One combined control reference per participant.
-        control_texts = (
-            controls.sort_values("task_key")["final_version"]
-            .fillna("")
-            .astype(str)
-            .tolist()
-        )
+        # Each control (unassisted) writing is embedded on its own, exactly
+        # like the drafts and edited texts, so every embedding is a
+        # single-document style vector.
+        #
+        # An earlier version concatenated a participant's two control texts
+        # into one "combined_controls" document. That made the control
+        # embedding a two-text composite while drafts and edited texts stayed
+        # single-text, an unfair length/composition mismatch: it let a
+        # classifier separate control from draft/edited almost perfectly
+        # (AUC ~ 1.0) and distorted the H1c / H2 effect magnitudes. Embedding
+        # each control text individually removes that asymmetry; the analyses
+        # that need "one control point per participant" now average the
+        # participant's control embeddings themselves.
+        for _, control_row in controls.sort_values("task_key").iterrows():
+            control_text = control_row["final_version"]
 
-        if any(not text.strip() for text in control_texts):
-            raise ValueError(
-                f"{participant_id}: an empty control text was found."
-            )
+            if pd.isna(control_text) or not str(control_text).strip():
+                raise ValueError(
+                    f"{participant_id}: an empty control text was found."
+                )
 
-        documents.append({
-            "participant_id": participant_id,
-            "task_key": "combined_controls",
-            "scenario": "multiple",
-            "text_type": "control_reference",
-            "text": "\n\n".join(control_texts),
-        })
+            documents.append({
+                "participant_id": participant_id,
+                "task_key": str(control_row["task_key"]),
+                "scenario": str(control_row["scenario"]),
+                "text_type": "control_reference",
+                "text": str(control_text),
+            })
 
         # One AI draft and one edited text per treatment task.
         for _, row in treatments.sort_values("task_key").iterrows():

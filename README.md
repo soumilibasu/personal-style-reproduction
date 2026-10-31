@@ -116,10 +116,13 @@ python src/prepare_analysis.py     # -> analysis_ready.jsonl
 python src/embed_luar.py           # LUAR-MUD embeddings -> luar_embeddings.npz (+ index)
 ```
 
-`src/embed_luar.py` requires `torch` and `transformers` and downloads the
+`src/embed_luar.py` requires `torch`, `transformers` and `einops` (the
+LUAR model's custom code imports `einops`) and downloads the
 `rrivera1849/LUAR-MUD` model; the other stages need only numpy/pandas.
-The embeddings are already committed, so the analysis stages below run
-without re-embedding.
+Pinned versions are in `requirements.txt` (`pip install -r requirements.txt`).
+Each text — control writing, LLM draft, edited final — is embedded as a
+**single document**; similarity to a participant's own writing is the mean
+cosine to their individual control texts.
 
 ### Stage 2 — all hypotheses (one file)
 
@@ -147,22 +150,29 @@ Outputs (in `data/processed/hypotheses/`):
 - `h3_perception_vs_measure.csv` — perceived vs. measured self-similarity.
 - `hypotheses_report.json` — machine-readable summary plus method caveats.
 
-All seven H1/H2 effect-size **directions** reproduce the paper, and
-several magnitudes are close:
+All seven H1/H2 effect-size **directions** reproduce the paper, and with
+each control text embedded individually (single document) and self-
+similarity measured as the mean cosine to a participant's own control
+texts, several magnitudes are close (ours vs paper):
 
-- **H1b** *g* = −0.42 vs −0.41 (near-exact).
-- **H2a** *g* = 1.54 vs 1.42, **H2b** −0.39 vs −0.69, **H2c** 1.82 vs 1.14
-  — homogeneity uses the paper's between-author pairwise similarity on the
-  **individual** texts (not participant centroids).
+- **H1a** 0.35 vs 0.55, **H1a′** −0.46 vs −0.56, **H1b** −0.42 vs −0.41
+  (near-exact).
+- **H1c** −1.28 vs −1.43 — post-edited text still sits closer to LLM style
+  than to the author's own writing.
+- **H2a** 1.12 vs 1.42, **H2b** −0.39 vs −0.69, **H2c** 1.10 vs 1.14 —
+  homogeneity uses between-author pairwise similarity on the **individual**
+  texts (not participant centroids).
 - **H3** uses **repeated-measures correlation** over both the draft and
   the edited text of each treatment task (Bakdash & Marusich, 2017), as the
-  paper does: *r* = 0.23, 95% CI [0.15, 0.31] vs the paper's 0.244 ± 0.076.
+  paper does: *r* = 0.21, 95% CI [0.13, 0.29] vs the paper's 0.244 ± 0.076.
 
-The remaining gaps (**H1a** 0.40 vs 0.55, **H1c** −1.96 vs −1.43) trace to
-the LUAR embedding step, which `src/embed_luar.py` flags as not an exact
-reproduction of the authors' preprocessing (combined control reference and
-a practical chunking strategy). Closing them requires re-embedding; the
-analysis code itself matches the paper's method.
+An earlier version concatenated each participant's two control texts into
+one embedding; measuring self-similarity to the **individual** control
+texts instead (a single-document, apples-to-apples comparison) pulled
+**H1c** and **H2c** markedly closer to the paper. Remaining gaps trace to
+documented preprocessing choices (LUAR chunking, the LLM style class built
+from other participants' drafts, no PANGRAM scores), so this is a strong
+**directional** reproduction, not an exact numeric one.
 
 ### Stage 3 — novel analysis: which edits recover personal style?
 
@@ -188,19 +198,157 @@ python src/novel/analyze_edit_recovery.py   # features -> predict style recovery
   `feature_target_correlations.csv`, `model_comparison.csv`,
   `feature_importance.csv`, `novel_report.json`.
 
-**Finding:** editing features explain a meaningful share of style recovery
-(grouped-CV R² ≈ 0.27), and the *kind*-of-edit model generalizes better
-than the raw *quantity* model. The strongest predictors are how
-extensively the draft was rewritten (fraction of words changed,
-characters inserted) together with word-level replacement.
+**Finding:** editing features explain a modest, non-trivial share of style
+recovery under participant-grouped CV (M1 quantity R² ≈ 0.13, M2 kind
+R² ≈ 0.10 over a negative-R² controls baseline; Ridge penalty tuned per
+training fold). At this sample size (81 participants, ~16 per CV fold) the
+*kind* and *quantity* models perform **similarly** — an earlier, larger
+gap favouring *kind* (R² ≈ 0.27) did not survive the corrected single-
+document control embedding, and per-fold R² is unstable (one fold is
+strongly negative), so we do **not** claim kind beats quantity. The
+strongest individual predictors are how extensively the draft was rewritten
+(fraction of words changed, characters inserted, draft–final similarity).
+`model_comparison.csv` reports per-fold R² and the chosen penalty.
+
+### Stage 3b — novel ML models on the LUAR embeddings
+
+Where Stage 3 predicts a similarity *score* from hand-crafted features,
+this script (now in `experiments/`) trains ML models directly on the
+512-dim LUAR *embeddings*, all cross-validated with GroupKFold by
+participant:
+
+```bash
+python experiments/style_classifier.py
+```
+
+- **Three-way style classifier** (human control / LLM draft / post-edited)
+  — turns the paper's H2 "distinct third variety" claim into a trained
+  model. Balanced accuracy ≈ 0.72 (chance 0.33); post-edited text is
+  mostly recognised as its own class and, when confused, is mistaken for
+  LLM text far more often than for human text — supporting both H2 and H1c.
+- **LLM-origin detector** (trained on human vs LLM, applied to edited
+  text) — a model-based analogue of the paper's PANGRAM analysis. ≈ 89–94%
+  of edited texts are still flagged LLM, consistent with H1c. *Caveat:* its
+  AUC ≈ 1.0 is **not** the old combined-control artifact (controls are now
+  single-document); LUAR simply separates human from LLM text almost
+  perfectly, confounded with topic/length, so it overstates generalisable
+  detection (documented in `novel_classifier_report.json`).
+- **Fusion with edit traces** — correlates the detector's P(LLM) on each
+  edited text with the Stage-3 edit features: more extensive rewriting and
+  adding first-person voice are the edits most associated with looking
+  less LLM-like.
+
+Outputs: `classifier_metrics.csv`, `classifier_3way_confusion.csv`,
+`detector_on_edited.csv`, `edit_vs_detector_correlations.csv`,
+`novel_classifier_report.json`.
+
+## Extended analyses (WP1–WP6)
+
+Beyond the core reproduction and the edit-recovery study, the project
+includes a broad set of analyses spanning feature engineering, classical
+ML, deep learning, and visualization. All classifiers are evaluated with
+**GroupKFold by participant** (no author in both train and test).
+
+### WP1 — Figures (`src/analysis/make_figures.py`)
+Regenerates the paper's key figures from the saved outputs: before/after
+similarity (H1a/H1b), self-vs-LLM (H1c), own-vs-other (H1a′), homogeneity
+by text type (H2), the H3 perceived-vs-measured plot, an effect-size
+forest plot (ours vs paper), and LLM-cue rates by text type. Written to
+`reports/figures/`.
+
+### WP2 — Stylometric features (`src/features/build_stylometry.py`)
+120 interpretable features per text (810 texts): function-word rates,
+POS mix, punctuation/readability, lexical diversity, and LLM-cue markers
+(em dashes, words like "delve"/"tapestry"). Finding: LLM-marker and
+em-dash rates are ≈0 in control, high in drafts, and **partially reduced**
+in edited text — editing removes some AI cues but not all. Output:
+`data/processed/features/stylometry_features.csv`.
+
+### WP3 — Classical ML model zoo (`src/analysis/classical_ml.py`)
+Seven classifiers (logreg, linear/RBF SVM, random forest, gradient
+boosting, kNN, naive Bayes) on both the LUAR embeddings and the stylometry
+features, for the 3-way style task and binary AI-detection.
+- **3-way style:** best balanced accuracy **0.75** (random forest on
+  stylometry), **0.75** (RBF-SVM on embeddings); chance = 0.33.
+- **AI-detection (human vs LLM):** ≈**0.95** balanced accuracy / **0.98**
+  AUC from stylometry features. (Embedding-based detection reads a perfect
+  1.0 even with single-document controls — a confounded, not generalisable,
+  result; see WP note below.)
+Outputs: `data/processed/analysis/classical_ml_model_comparison.csv`,
+ROC and confusion-matrix figures.
+
+### WP4 — Deep learning (`src/dl/`)
+- `dl_models.py`: a PyTorch **MLP** on the embeddings (3-way) and an
+  **LSTM over the raw keystroke edit stream** predicting whether an edit
+  moved the text toward the author's own style — a time-series use of the
+  logs that nothing else here does.
+- `finetune_transformer.py`: fine-tunes **DistilBERT** on the raw text for
+  the 3-way task (single participant-held-out split; CPU feasibility demo).
+Results: MLP balanced acc **0.74** (matches the best classical model);
+keystroke-LSTM AUC **0.60** (typing dynamics alone only weakly predict
+edit success); DistilBERT balanced acc **0.66** — notably *below* the
+LUAR-embedding models, i.e. a purpose-built style embedding beats a quick
+raw-text transformer fine-tune on this style task. Outputs:
+`data/processed/dl/*.json`.
+
+### WP5 — Visualization & demographics (`src/analysis/`)
+- `visualize_embeddings.py`: PCA and t-SNE of all texts coloured by type
+  (shows post-edited text as its own region), plus style recovery by
+  scenario (eulogy/letter recover most; wedding/condolence least).
+- `demographics.py`: the paper's H5 (effort/success across gender and
+  education groups) — no significant differences at this sample size
+  (exploratory, as in the paper).
+
+### WP6 — Own vs generic recovery (`src/novel/own_vs_generic_recovery.py`)
+The most robust novel result. Post-editing moves text toward the author's
+**own** control style significantly more than toward other authors'
+styles (specificity = +0.0095, p < .001, g = 0.65) — so the restored style
+is **author-specific, not generic humanisation**, which answers the main
+critique of the Stage-3 result. *Honest limit:* with the corrected single-
+document control embedding, edit features predict own-gain (grouped-CV
+R² ≈ 0.08) and other-gain (≈ 0.08) about **equally**, so the earlier claim
+that edit features predict *own* recovery better than generic movement did
+not survive — the specificity of recovery holds as a mean difference, but
+is not separable with these features at this sample size.
+
+### Note on the embedding AI-detection "perfect" AUC
+Embedding-based human-vs-LLM detection scores a near-perfect AUC **even
+with each control text embedded as a single document** — so this is not the
+old combined-vs-single artifact. LUAR genuinely separates human control
+writing from LLM drafts, but that separation is confounded with topic and
+length (controls and drafts are different prompts), so it overstates
+generalisable AI detection. The stylometry detector (AUC ≈ 0.98) is the
+fair, confound-limited number.
+
+### Final build report
+
+`python src/make_report.py` reads every result file and regenerates
+`reports/final_build_report.md` — a single consolidated report (reproduction
+table, novel findings, ML/DL results, supplementary experiments, figures,
+and the honest caveats). Run it last, after the pipeline.
+
+## Repository layout
+
+- `src/` — the main pipeline (reproduction, feature engineering, novel
+  edit-recovery and own-vs-generic analyses, classical ML, visualization,
+  deep learning, and `make_report.py`).
+- `experiments/` — supplementary studies kept for completeness but not
+  central findings: `style_classifier.py` (overlaps the classical zoo; also
+  carries the confounded embedding detector) and `demographics.py` (an
+  exploratory null).
+- `requirements.txt` — pinned dependencies.
+- `reports/` — the generated `final_build_report.md` and `figures/`.
 
 ## Project Scope
 
 This repository reproduces the paper's reported study on the released
-logs and adds one novel analysis (Stage 3). It is a course
-reproduction: method choices that deviate from the authors' exact
-procedure are documented in the scripts and in each run's
-`*_report.json` caveats.
+logs and adds a novel analysis of which editing behaviours recover personal
+style and whether that recovery is author-specific, plus a broad set of
+supporting ML/DL experiments. It is a course reproduction: method choices
+that deviate from the authors' exact procedure are documented in the
+scripts and in each run's `*_report.json` caveats. Where a robustness check
+weakened an earlier result (e.g. the kind-vs-quantity gap, the embedding
+detector), the README and report state the weaker, honest conclusion.
 
 ## Reference
 

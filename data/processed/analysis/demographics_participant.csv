@@ -1,0 +1,82 @@
+participant_id,gender,race,age,education,mean_editing_time_s,mean_n_edits,mean_frac_words_changed,mean_own_gain,education_bin
+03acc614-1708-42a6-b142-9ef7a0f0ce4e,woman,Black or African American,29,College graduate (4 or 5 year program),154.55203008651733,83.0,0.08437279718981017,-0.00018836565547302497,degree
+06285a67-fbc5-4673-9f1b-3e20aff3562f,woman,Black or African American,25,Master’s degree (or other post-graduate training),168.477836728096,50.5,0.05053763440860212,0.005224777225883801,degree
+0a303467-79b1-4641-9591-8c3a36f50413,woman,Black or African American,25,College graduate (4 or 5 year program),229.17857080698013,54.5,0.0572349947349947,0.0058838275108604,degree
+0c529ac4-63ef-47e4-a8be-91a12f63242d,woman,Prefer not to say,26,College graduate (4 or 5 year program),150.58266520500183,52.5,0.04781179371275937,0.001689476901150425,degree
+0d91417f-a097-424f-bf12-77b98654c26c,man,Black or African American,58,Master’s degree (or other post-graduate training),136.01940554380417,46.25,0.041270067332874374,0.00607667532094375,degree
+0e4ed97b-533a-4c35-9268-2610361186c3,man,Black or African American,unknown,"Doctoral degree (PhD, MD, JD, etc.)",185.5745255947113,32.5,0.026162858567693698,-0.0029676999225863,degree
+1460c925-65dc-4f85-9bee-a3029020dd78,woman,Black or African American,28,College graduate (4 or 5 year program),130.32465213537216,101.5,0.1120405068250733,0.027163835178528523,degree
+16e11b3b-7143-40ed-ba2c-c94e96d5be86,man,Black or African American,20,Less than 2 years of college,210.8400748372078,78.5,0.08916482685783522,0.011823624008011426,no_degree
+1a25aba9-d542-49a4-94df-900c081551b6,woman,Black or African American,28,College graduate (4 or 5 year program),158.7358620762825,66.75,0.057102157102157075,0.012816830567801574,degree
+1a6bc3bd-868e-47cf-970d-67cf7d516465,woman,Black or African American,22,College graduate (4 or 5 year program),244.1059566140175,84.75,0.08975540609468223,0.0026975939776015495,degree
+1b97dea3-013d-476c-96a6-49d2960c7c99,woman,Black or African American,44,Master’s degree (or other post-graduate training),134.1288845539093,23.5,0.018449455949455924,0.0052319102227373245,degree
+1f506d3f-b34d-4657-9820-ef232904554d,man,Black or African American,38,Master’s degree (or other post-graduate training),125.85036760568619,88.0,0.052310899436325095,0.009935681708243875,degree
+21d20b0e-b89e-42a8-b0bb-cb8b2d2e35df,woman,Black or African American,20,College graduate (4 or 5 year program),201.05742156505585,79.0,0.0845075522463071,0.003042509116386575,degree
+28bc03dc-f524-4a10-b9aa-4368bd13df42,woman,Black or African American,23,Master’s degree (or other post-graduate training),136.2822945713997,22.75,0.003344519015659925,0.013110636789401999,degree
+2af273f2-bea4-4638-9cd7-4a8d3a0b8f26,woman,Prefer not to say,38,College graduate (4 or 5 year program),123.82619827985764,16.75,0.027909286891222327,0.001926898582241,degree
+32a9cad7-5b1c-480f-832c-1cedb782d226,man,Black or African American,54,"Doctoral degree (PhD, MD, JD, etc.)",134.05804926156998,144.5,0.18216381466446366,0.04211270639641775,degree
+354ff2f3-d1e5-40ee-9b32-f1c81c5d4df5,woman,Black or African American,24,College graduate (4 or 5 year program),399.91763281822205,620.75,0.5000974441823554,0.020052769695751226,degree
+357b9f78-df87-4775-a67e-9a41bebbc02f,man,White,42,College graduate (4 or 5 year program),245.06925570964813,142.0,0.3078953627864648,0.00764522396905375,degree
+36f7c04d-9eb6-41fa-ae60-a6ad6fa1c429,woman,Black or African American,25,College graduate (4 or 5 year program),218.55180031061172,170.5,0.1722246897130308,0.02038448088276535,degree
+379876ef-ea66-4914-90c7-052d13ad9036,woman,Black or African American,33,Less than 2 years of college,201.06050258874893,42.0,0.04340156084065637,0.0031715896288473503,no_degree
+417a64ff-e3b5-45c1-a926-83e8b3897840,man,Black or African American,25,College graduate (4 or 5 year program),193.70783400535583,30.25,0.02087987093571605,0.01203461067355085,degree
+47936247-3b3b-4aec-a540-0199ded5b35f,man,Black or African American,27,College graduate (4 or 5 year program),576.4048272967339,1089.25,1.0242354626324397,0.032280144528422025,degree
+4cc3c761-a0ef-4a7d-b572-f933d9f34d7e,woman,Black or African American,26,Master’s degree (or other post-graduate training),212.37945234775543,146.25,0.2602228852228852,0.02642960227171505,degree
+4d13e808-d845-407b-8891-abc4bbd755a3,woman,Black or African American,37,Master’s degree (or other post-graduate training),136.9201199412346,83.25,0.08914481848702167,0.00461457860936175,degree
+54b36269-e8c7-475b-8d5c-8d028a523f32,man,Black or African American,27,Master’s degree (or other post-graduate training),196.4817612171173,97.0,0.08533632951126818,0.002615637368637825,degree
+572392a4-224e-4261-ad20-1c06fabc9220,woman,Black or African American,29,College graduate (4 or 5 year program),134.68628680706024,0.75,0.0,0.0,degree
+57f6eb08-1334-4d1d-b32e-7ead2fae69b5,man,Black or African American,unknown,Master’s degree (or other post-graduate training),242.51537257432938,62.0,0.06397912736273892,0.0020946068284456746,degree
+58a194df-223f-48a6-b63e-6dd56c0f2b57,woman,Black or African American,36,College graduate (4 or 5 year program),577.1224150061607,751.5,0.588157328388693,0.016549716802087524,degree
+5ebe55d9-ec28-4e1f-bba3-3e309275a847,woman,Black or African American,26,College graduate (4 or 5 year program),374.8805482387543,660.5,0.5555278055278055,0.03285631730914915,degree
+6003984f-f1dd-4a12-a9fb-e0031f48832d,man,Black or African American,39,"Doctoral degree (PhD, MD, JD, etc.)",124.87939327955246,42.5,0.032046965698301524,0.0038573015107822997,degree
+601a6b65-1891-482f-ba3c-46db6c722f4a,woman,White,45,College graduate (4 or 5 year program),167.69054174423218,138.75,0.1548007100426455,0.0160529041777774,degree
+633b5061-eafb-439d-acc4-be045cbf249b,man,Black or African American,29,College graduate (4 or 5 year program),695.7448991537094,705.25,0.9099286497068837,0.0317086987615813,degree
+6998773e-d1b4-4b6d-ac29-f75d132ecb89,woman,Black or African American,23,College graduate (4 or 5 year program),126.73232924938202,30.25,0.049724446856438245,0.0159752646260843,degree
+6c6c9fd2-8452-4e83-975b-1b6a489f13eb,man,Black or African American,42,Master’s degree (or other post-graduate training),131.58287394046783,48.25,0.046297887479514375,0.0013563971390433249,degree
+6c9db161-b8da-48f4-a9ba-f740f5ab9d93,woman,Black or African American,42,College graduate (4 or 5 year program),123.06392800807953,9.25,0.011509504987765824,-0.00046620124831722493,degree
+702965f6-e3c0-4fd0-beab-2b57d2e90797,man,Asian,33,College graduate (4 or 5 year program),261.64873254299164,533.5,0.6661945614050255,0.04312669821681313,degree
+70d867de-7bf1-479e-b0df-f2791efc2269,woman,Black or African American,20,Less than 2 years of college,141.70888191461563,281.75,0.2960278729374408,0.031217546529549174,no_degree
+79e9c336-6d58-4da1-a022-64dc69586c6e,woman,White,33,Less than 2 years of college,521.6691550016403,1655.5,1.0453535525689306,0.022706841385807926,no_degree
+7e876183-c6fa-4de5-b0b3-4e06019dc486,woman,Black or African American,22,College graduate (4 or 5 year program),152.00486612319946,92.5,0.10399987321676624,0.0063998508681959495,degree
+87c461ed-6bbd-4205-b25a-1d517a9a16e5,woman,Black or African American,27,Master’s degree (or other post-graduate training),136.0389198064804,219.75,0.241686456340934,-0.00776797258360265,degree
+8891e9bd-553c-4445-8692-af9aa1df345b,man,White,unknown,College graduate (4 or 5 year program),134.4450433254242,212.5,0.2077429190147695,0.0194326554575977,degree
+8ae99e0d-dea4-4a4b-accb-1145d983f09a,woman,Black or African American,26,"Doctoral degree (PhD, MD, JD, etc.)",319.7223302721977,154.0,0.22014993288285212,0.031296602585015196,degree
+8ba8d7da-bbcf-44c8-8887-d6b083446deb,woman,Native Hawaiian or Other Pacific Islander,31,College graduate (4 or 5 year program),182.3129500746727,77.75,0.09749815667509328,0.0021734676683013,degree
+8c1d839b-8bda-45bf-a466-1ecd1270be13,woman,White,32,College graduate (4 or 5 year program),311.9991143941879,244.0,0.4550994799739835,0.0278451251479853,degree
+93919296-449e-4498-9198-8f21282f387e,woman,Black or African American,25,College graduate (4 or 5 year program),133.09852719306946,11.75,0.0047483380816714,-0.0005538658630698751,degree
+93d4e6ef-1df0-4690-a934-51f2ff067a1f,woman,Black or African American,72,College graduate (4 or 5 year program),130.86342197656631,26.0,0.022727272727272724,0.003257510875878975,degree
+946ad540-3b18-4f52-96e9-9134d4ec9878,man,Black or African American,30,College graduate (4 or 5 year program),428.8733454942703,306.25,0.25139793847468483,0.003224429979212075,degree
+9473c36d-e078-4a5b-a106-a4de719f1c1b,woman,Black or African American,43,Master’s degree (or other post-graduate training),308.7693794965744,112.0,0.055836676842803926,0.008153186762764709,degree
+95648190-a022-43f7-a299-7d7c22e55289,woman,White,29,"Doctoral degree (PhD, MD, JD, etc.)",199.11315524578094,405.0,0.5833685422117403,0.05806832799751635,degree
+99d7de62-94ed-4cc5-99bf-dbb5974df705,woman,Black or African American,27,College graduate (4 or 5 year program),141.25941687822342,201.75,1.263091025085464,0.034346261099652275,degree
+9c117e71-7c5a-42b2-8767-9a3cbedc17d9,woman,White,unknown,College graduate (4 or 5 year program),377.14868915081024,85.25,0.08894519894519892,0.00010720345295730073,degree
+9d164220-c497-48ff-8497-55c050213e55,man,White,26,College graduate (4 or 5 year program),143.0974806547165,79.75,0.11985820771036268,0.0016946367189464501,degree
+a03e9b46-d5c1-401e-ba35-3746d2880c76,woman,Black or African American,48,"Doctoral degree (PhD, MD, JD, etc.)",159.18499612808228,180.75,0.16749407269211514,0.011116372840201675,degree
+a1a47852-cad9-495d-a871-6797dc780d4f,woman,Prefer not to say,37,College graduate (4 or 5 year program),315.87719678878784,167.5,0.18008968677732975,0.0080156708379963,degree
+a65fbf73-ac73-4c89-8477-fe2768a27dd5,woman,Black or African American,43,Master’s degree (or other post-graduate training),126.61672347784042,10.25,0.006350968060180024,0.002847606753220675,degree
+a66edf01-fecd-4939-a982-b7c6684d7a29,man,Black or African American,35,"Didn’t Finish High School, but completed a technical/vocational program",141.91497826576233,18.0,0.01483122362869195,-0.000592183337152,no_degree
+ad73f9f4-5813-4fcc-b875-4ccc998f95b7,woman,Black or African American,31,College graduate (4 or 5 year program),126.59343558549881,12.25,0.016331452865669175,0.0021651939099332,degree
+b417dba7-2b67-4496-b985-fc67c15aa748,woman,Asian,44,Master’s degree (or other post-graduate training),461.83785659074783,379.5,0.29614592902348513,0.01675866252337955,degree
+bcf3699f-b36e-4652-a117-7e1de296c0f3,woman,Black or African American,unknown,College graduate (4 or 5 year program),157.60661816596985,102.0,0.07739962781121315,0.007908339595568425,degree
+c457e22c-d7ad-4ba6-a5eb-457b445a6415,man,White,59,College graduate (4 or 5 year program),236.90869694948196,213.0,0.1851847677344612,0.013683971590254525,degree
+c558e2d5-8448-41bb-9b4d-279a0ac50263,woman,White,unknown,Completed High School and a technical/vocational program,215.4088539481163,160.5,0.24797677372527668,0.0489497955966551,no_degree
+c649bdf1-c479-449c-91bb-eb0986daa185,woman,Prefer not to say,38,"Doctoral degree (PhD, MD, JD, etc.)",226.90701961517334,126.5,0.13841142517613103,0.009540506717728424,degree
+c95c8274-9889-4d96-b769-5af9729da064,woman,Black or African American,54,College graduate (4 or 5 year program),287.2871724367142,198.75,0.1901987453458041,0.014002649042305526,degree
+c9afe4ed-b46e-4919-a89b-9c3639640775,woman,Black or African American,27,College graduate (4 or 5 year program),137.42810779809952,34.0,0.0395271395271395,0.007171010815880101,degree
+cb6b9158-75df-42e4-92ac-d2e2d03e66a7,woman,Black or African American,24,College graduate (4 or 5 year program),156.58211141824722,15.25,0.01638837353123065,0.00041088477249105,degree
+d1850bd6-2dc4-4a79-9b27-da09d1ccb338,woman,Black or African American,24,College graduate (4 or 5 year program),192.50840592384338,241.75,0.2842400365943478,0.02310628131375345,degree
+d1df814b-04d7-45ef-afa9-19333672b460,woman,Black or African American,24,"Doctoral degree (PhD, MD, JD, etc.)",183.37231892347336,5.0,0.004870129870129825,-0.00606535249306175,degree
+df299e8f-5085-44ff-95c9-6de38dbb72a4,man,Black or African American,65,Master’s degree (or other post-graduate training),152.92494904994965,93.0,0.08744571104307217,0.006869195804612125,degree
+e04e957f-4182-4050-8a59-10c546f3c4be,woman,Black or African American,33,College graduate (4 or 5 year program),252.74960178136826,92.0,0.19657886118060464,0.0056626111252094,degree
+e181c353-09f4-402b-b7e5-c62f87df85f5,woman,Asian,34,College graduate (4 or 5 year program),142.72439008951187,81.5,0.0775720454835514,0.016491535725525273,degree
+e796692a-297a-495e-a059-f32263c2c073,man,Black or African American,39,College graduate (4 or 5 year program),297.23533260822296,514.25,0.4785346679200374,0.00912698998615805,degree
+e914a063-af74-4e82-9fae-a27aa34cf284,woman,Black or African American,32,"Doctoral degree (PhD, MD, JD, etc.)",275.29561680555344,0.5,0.0,-0.000134026897198725,degree
+e9c4bc43-6f2f-4b3f-8ab0-f20947fd04f9,woman,White,42,Completed High School and a technical/vocational program,254.43611139059067,221.25,0.1810823229686352,0.0264472371957559,no_degree
+ec874e47-e1e7-400a-b8c2-057063b54e63,man,Black or African American,24,College graduate (4 or 5 year program),209.46818751096725,17.75,0.271875,0.006984153206096449,degree
+edb2f8e7-ab70-4257-8246-bf4352832807,woman,Black or African American,38,"Doctoral degree (PhD, MD, JD, etc.)",386.06554305553436,225.75,0.13835596979958084,0.01040721233686065,degree
+f34cb204-36d3-4051-9ae0-0969882d1cda,woman,Black or African American,20,High School Graduate or GED (General Education Diploma),142.62698715925217,18.5,0.016447368421052624,-0.001864273199464375,no_degree
+f35a5d38-18e0-4c01-8a53-13fc23a63680,man,Black or African American,19,Less than 2 years of college,140.18074715137482,120.5,0.14155998241798162,0.02169708531365305,no_degree
+f5d09877-f461-4169-a291-79c17218071d,man,Black or African American,30,College graduate (4 or 5 year program),135.43893134593964,33.25,0.03406377573044235,-0.0027438202858055256,degree
+f7e55f3c-94b2-4e45-b8c2-e0ef967715ae,man,Asian,54,"Doctoral degree (PhD, MD, JD, etc.)",133.37941616773605,81.5,0.097797439282047,0.00616017727378175,degree
+fd93ee7a-8e03-4ead-8a80-9847e589e01e,woman,Black or African American,28,College graduate (4 or 5 year program),163.20052939653397,86.75,0.08386468065973593,0.007698697525235075,degree
+fe48cc42-b6f0-41a3-b2a0-0c3a1d733997,man,Prefer not to say,67,2 Years of College or more/ including associate degree or equivalent,178.00241214036942,30.5,0.022727272727272724,-0.002382422528886625,no_degree

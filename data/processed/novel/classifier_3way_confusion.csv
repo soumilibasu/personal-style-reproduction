@@ -1,0 +1,7 @@
+model,row,pred_human_control,pred_llm_draft,pred_post_edited
+logreg,true_human_control,142,2,18
+logreg,true_llm_draft,2,218,104
+logreg,true_post_edited,17,121,186
+random_forest,true_human_control,143,0,19
+random_forest,true_llm_draft,0,239,85
+random_forest,true_post_edited,14,137,173

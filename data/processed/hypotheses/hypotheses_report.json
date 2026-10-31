@@ -11,13 +11,13 @@
       "comparison": "draft->own control  vs  edited->own control",
       "n_x": 324,
       "n_y": 324,
-      "mean_x": 0.8148176987183366,
-      "mean_y": 0.8323564162157939,
-      "mean_difference_y_minus_x": 0.01753871749745728,
+      "mean_x": 0.8517849062097975,
+      "mean_y": 0.8635004967137863,
+      "mean_difference_y_minus_x": 0.011715590503988738,
       "permutation_p_two_sided": 9.999000099990002e-05,
-      "hedges_g": 0.4044642965213075,
-      "g_ci_95_low": 0.24085981708359394,
-      "g_ci_95_high": 0.5797818262295701
+      "hedges_g": 0.346829830701645,
+      "g_ci_95_low": 0.19216853676790455,
+      "g_ci_95_high": 0.5084520175280991
     },
     {
       "hypothesis": "H1a_prime",
@@ -25,13 +25,13 @@
       "comparison": "edited->own control  vs  edited->other participants' control",
       "n_x": 324,
       "n_y": 324,
-      "mean_x": 0.8323564162157939,
-      "mean_y": 0.8164724740338938,
-      "mean_difference_y_minus_x": -0.015883942181900146,
+      "mean_x": 0.8635004967137863,
+      "mean_y": 0.8504348154216489,
+      "mean_difference_y_minus_x": -0.013065681292137366,
       "permutation_p_two_sided": 9.999000099990002e-05,
-      "hedges_g": -0.4412512778997776,
-      "g_ci_95_low": -0.6043703299998283,
-      "g_ci_95_high": -0.28497193917520514
+      "hedges_g": -0.46225395609106606,
+      "g_ci_95_low": -0.6193722468825147,
+      "g_ci_95_high": -0.30894499550613613
     },
     {
       "hypothesis": "H1b",
@@ -39,13 +39,13 @@
       "comparison": "draft->LLM class  vs  edited->LLM class",
       "n_x": 324,
       "n_y": 324,
-      "mean_x": 0.9058842813362028,
-      "mean_y": 0.8988159805263831,
-      "mean_difference_y_minus_x": -0.007068300809819683,
+      "mean_x": 0.905884281730903,
+      "mean_y": 0.8988159810576928,
+      "mean_difference_y_minus_x": -0.007068300673210182,
       "permutation_p_two_sided": 9.999000099990002e-05,
-      "hedges_g": -0.41728016967807885,
-      "g_ci_95_low": -0.5704535723957599,
-      "g_ci_95_high": -0.279072952842365
+      "hedges_g": -0.41728016183746025,
+      "g_ci_95_low": -0.5704535768365157,
+      "g_ci_95_high": -0.279072852805122
     },
     {
       "hypothesis": "H1c",
@@ -53,27 +53,27 @@
       "comparison": "edited->LLM class  vs  edited->own control",
       "n_x": 324,
       "n_y": 324,
-      "mean_x": 0.8988159805263831,
-      "mean_y": 0.8323564162157939,
-      "mean_difference_y_minus_x": -0.06645956431058919,
+      "mean_x": 0.8988159810576928,
+      "mean_y": 0.8635004967137863,
+      "mean_difference_y_minus_x": -0.03531548434390652,
       "permutation_p_two_sided": 9.999000099990002e-05,
-      "hedges_g": -1.9642051779501157,
-      "g_ci_95_low": -2.174570161721777,
-      "g_ci_95_high": -1.7728165219187149
+      "hedges_g": -1.276172125557569,
+      "g_ci_95_low": -1.4612527372708508,
+      "g_ci_95_high": -1.0910655956503625
     },
     {
       "hypothesis": "H2a",
       "description": "Post-edited writing is MORE stylistically homogeneous (higher between-author similarity) than unassisted human writing.",
       "comparison": "between-author similarity: control pairs  vs  edited pairs",
-      "n_x": 3240,
+      "n_x": 12960,
       "n_y": 51840,
-      "mean_x": 0.8400404231404253,
-      "mean_y": 0.893454384867778,
-      "mean_difference_y_minus_x": 0.05341396172735269,
+      "mean_x": 0.8545024674618716,
+      "mean_y": 0.8934543854678252,
+      "mean_difference_y_minus_x": 0.038951918005953545,
       "permutation_p_two_sided": 9.999000099990002e-05,
-      "hedges_g": 1.536920710005634,
-      "g_ci_95_low": 1.48896212218539,
-      "g_ci_95_high": 1.5830135023318412
+      "hedges_g": 1.1172578677343636,
+      "g_ci_95_low": 1.0950431546803436,
+      "g_ci_95_high": 1.1384943690073563
     },
     {
       "hypothesis": "H2b",
@@ -81,13 +81,13 @@
       "comparison": "between-author similarity: draft pairs  vs  edited pairs",
       "n_x": 51840,
       "n_y": 51840,
-      "mean_x": 0.9058842813362027,
-      "mean_y": 0.893454384867778,
-      "mean_difference_y_minus_x": -0.01242989646842474,
+      "mean_x": 0.9058842817309032,
+      "mean_y": 0.8934543854678252,
+      "mean_difference_y_minus_x": -0.012429896263078,
       "permutation_p_two_sided": 9.999000099990002e-05,
-      "hedges_g": -0.3891720049397471,
-      "g_ci_95_low": -0.4004071677719012,
-      "g_ci_95_high": -0.37734770639693366
+      "hedges_g": -0.3891719941576198,
+      "g_ci_95_low": -0.40094955593123505,
+      "g_ci_95_high": -0.37726996389023587
     },
     {
       "hypothesis": "H2c",
@@ -95,13 +95,13 @@
       "comparison": "edited->own control  vs  edited->other participants' edited",
       "n_x": 324,
       "n_y": 324,
-      "mean_x": 0.8323564162157939,
-      "mean_y": 0.8934543848677778,
-      "mean_difference_y_minus_x": 0.061097968651983914,
+      "mean_x": 0.8635004967137863,
+      "mean_y": 0.8934543854678251,
+      "mean_difference_y_minus_x": 0.029953888754038815,
       "permutation_p_two_sided": 9.999000099990002e-05,
-      "hedges_g": 1.8214379748354348,
-      "g_ci_95_low": 1.6437669354958968,
-      "g_ci_95_high": 2.0380160282532453
+      "hedges_g": 1.0965794002292093,
+      "g_ci_95_low": 0.9302644919479937,
+      "g_ci_95_high": 1.2940774324227138
     }
   ],
   "H3": {
@@ -111,13 +111,13 @@
     "method": "repeated-measures correlation (Bakdash & Marusich, 2017)",
     "n_observations": 648,
     "n_participants": 81,
-    "rmcorr_r": 0.23069045584433287,
-    "rmcorr_p": 2.681456113600527e-08,
+    "rmcorr_r": 0.2071808793125141,
+    "rmcorr_p": 6.327082333595044e-07,
     "df_error": 566,
-    "ci_95_low": 0.15129039024195431,
-    "ci_95_high": 0.3071327524162904,
-    "rmcorr_r_capture_only": 0.21125552534338699,
-    "rmcorr_p_capture_only": 3.7512676525548326e-07,
+    "ci_95_low": 0.12707544748160646,
+    "ci_95_high": 0.28460127248768924,
+    "rmcorr_r_capture_only": 0.18640427551716157,
+    "rmcorr_p_capture_only": 7.749376334622243e-06,
     "paper_rmcorr_r": 0.244,
     "paper_ci_halfwidth": 0.076,
     "paper_p": 0.0001
@@ -126,6 +126,6 @@
     "Scores are treated as independent; tasks are nested within participants and homogeneity pairs reuse participants.",
     "LLM style class = other participants' drafts (leave-own-participant-out).",
     "H1b uses the LUAR style measure only; PANGRAM scores are not available in this dataset.",
-    "Control writing is represented by one combined embedding per participant, matching the paper's one-point-per-participant homogeneity analysis."
+    "Each control text is embedded individually (single-document style vector); the self-similarity hypotheses average a participant's control vectors into one reference point, and the homogeneity analysis uses the individual control texts."
   ]
 }

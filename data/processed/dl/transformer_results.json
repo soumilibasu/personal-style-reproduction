@@ -1,0 +1,10 @@
+{
+  "model": "fine-tuned distilbert-base-uncased on raw text",
+  "task": "3way_style",
+  "split": "16 held-out participants",
+  "epochs": 3,
+  "accuracy": 0.60625,
+  "balanced_accuracy": 0.6614583333333334,
+  "macro_f1": 0.5728145728145728,
+  "chance": 0.3333333333333333
+}

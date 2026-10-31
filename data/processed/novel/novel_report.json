@@ -4,114 +4,146 @@
   "n_participants": 81,
   "cv": "GroupKFold(n_splits=5) grouped by participant",
   "model_cv_r2": {
-    "M0_controls": -0.0593820206060911,
-    "M1_controls+quantity": 0.157280640676831,
-    "M2_controls+kind": 0.26649434977552744,
-    "M3_full": 0.15005860240448465
+    "M0_controls": -0.04242078003240124,
+    "M1_controls+quantity": 0.12478784665167442,
+    "M2_controls+kind": 0.09694779385451635,
+    "M3_full": 0.11202346714523437
   },
-  "quantity_r2_gain_over_controls": 0.2166626612829221,
-  "kind_r2_gain_over_controls": 0.32587637038161854,
-  "kind_beats_quantity": true,
+  "quantity_r2_gain_over_controls": 0.16720862668407566,
+  "kind_r2_gain_over_controls": 0.1393685738869176,
+  "kind_beats_quantity": false,
+  "model_fold_r2": {
+    "M0_controls": [
+      0.012525234293958687,
+      -0.23201939833984464,
+      -0.003109440638621397,
+      -0.006779544947611571,
+      -0.01160506759836366
+    ],
+    "M1_controls+quantity": [
+      0.1913392358937822,
+      0.1856081631197306,
+      0.34306014540621443,
+      -0.24490618724176327,
+      0.055659228223896906
+    ],
+    "M2_controls+kind": [
+      0.21899825567354403,
+      -0.6719722678012261,
+      0.3813385580192086,
+      -0.16403792903515924,
+      0.21971380281370168
+    ],
+    "M3_full": [
+      0.2314564837279378,
+      -0.7539173460353392,
+      0.40869207382238115,
+      -0.06239366833574378,
+      0.21305777417557037
+    ]
+  },
+  "full_model_alpha": 137.3823795883264,
+  "regularisation": "Ridge penalty tuned per training fold by RidgeCV over alphas in [0.01, 1e+03].",
   "top_correlations": [
     {
       "feature": "frac_words_changed",
       "group": "kind",
-      "spearman_r": 0.6831228707376403,
-      "spearman_p": 7.240001552021739e-46
+      "spearman_r": 0.6204492517360344,
+      "spearman_p": 7.355358431261047e-36
     },
     {
       "feature": "chars_inserted",
       "group": "quantity",
-      "spearman_r": 0.6826325549692089,
-      "spearman_p": 8.867124825967252e-46
-    },
-    {
-      "feature": "edits_per_100_draft_chars",
-      "group": "quantity",
-      "spearman_r": 0.6665020875190567,
-      "spearman_p": 5.635705199281278e-43
-    },
-    {
-      "feature": "n_edits",
-      "group": "quantity",
-      "spearman_r": 0.6660878157983653,
-      "spearman_p": 6.6165782988934505e-43
+      "spearman_r": 0.6121695161675939,
+      "spearman_p": 1.0545590570134377e-34
     },
     {
       "feature": "draft_final_similarity",
       "group": "kind",
-      "spearman_r": -0.6653177226637162,
-      "spearman_p": 8.909944276916859e-43
+      "spearman_r": -0.6097573261111526,
+      "spearman_p": 2.2573762880229604e-34
+    },
+    {
+      "feature": "edits_per_100_draft_chars",
+      "group": "quantity",
+      "spearman_r": 0.600126117061842,
+      "spearman_p": 4.420999110252537e-33
+    },
+    {
+      "feature": "n_edits",
+      "group": "quantity",
+      "spearman_r": 0.5993723151303826,
+      "spearman_p": 5.5564178216774376e-33
     },
     {
       "feature": "chars_deleted",
       "group": "quantity",
-      "spearman_r": 0.5168311859731939,
-      "spearman_p": 1.5905305722107046e-23
+      "spearman_r": 0.49898210843407337,
+      "spearman_p": 8.41851352630098e-22
     },
     {
       "feature": "words_inserted",
       "group": "kind",
-      "spearman_r": 0.5122355782145398,
-      "spearman_p": 4.519348158087513e-23
+      "spearman_r": 0.4283540654304355,
+      "spearman_p": 6.857095944480224e-16
     },
     {
       "feature": "words_replaced",
       "group": "kind",
-      "spearman_r": 0.4148980974605962,
-      "spearman_p": 6.524291737269898e-15
+      "spearman_r": 0.40706431467600085,
+      "spearman_p": 2.3135186246663996e-14
     }
   ],
   "top_importance": [
     {
       "feature": "draft_final_similarity",
       "group": "kind",
-      "std_ridge_coef": -0.025775915855391775,
-      "perm_importance_r2": 2.3640737188538243
+      "std_ridge_coef": -0.0028301216898176584,
+      "perm_importance_r2": 5.515985705470727
     },
     {
-      "feature": "n_edits",
-      "group": "quantity",
-      "std_ridge_coef": 0.01580170515497819,
-      "perm_importance_r2": 0.22222099008459056
-    },
-    {
-      "feature": "edits_per_100_draft_chars",
-      "group": "quantity",
-      "std_ridge_coef": -0.012202301276884438,
-      "perm_importance_r2": 0.01253419973092228
+      "feature": "words_inserted",
+      "group": "kind",
+      "std_ridge_coef": 0.002209597634599001,
+      "perm_importance_r2": 0.5156098493125894
     },
     {
       "feature": "frac_words_changed",
       "group": "kind",
-      "std_ridge_coef": -0.00759913939561696,
-      "perm_importance_r2": 0.6525029138890838
+      "std_ridge_coef": 0.0016117196975206798,
+      "perm_importance_r2": 19.535008126698955
     },
     {
-      "feature": "words_replaced",
+      "feature": "editing_time_s",
+      "group": "quantity",
+      "std_ridge_coef": -0.00129236967249926,
+      "perm_importance_r2": 0.026151778983047446
+    },
+    {
+      "feature": "uppercase_ratio_change",
       "group": "kind",
-      "std_ridge_coef": -0.005425964240293415,
-      "perm_importance_r2": 0.5058123381392231
+      "std_ridge_coef": 0.001247323962060211,
+      "perm_importance_r2": -0.011287206400425376
     },
     {
       "feature": "first_person_change",
       "group": "kind",
-      "std_ridge_coef": 0.0048985186178422254,
-      "perm_importance_r2": 0.006949598736069612
+      "std_ridge_coef": 0.001193412750279896,
+      "perm_importance_r2": 0.0502192014484761
     },
     {
-      "feature": "sent_count_change",
+      "feature": "contraction_change",
       "group": "kind",
-      "std_ridge_coef": 0.004456874161519039,
-      "perm_importance_r2": 0.2797430478428399
+      "std_ridge_coef": 0.0011181055556764759,
+      "perm_importance_r2": -0.025170149766440553
     },
     {
-      "feature": "len_change_ratio",
-      "group": "kind",
-      "std_ridge_coef": -0.0038080323917842594,
-      "perm_importance_r2": 0.30140361784794256
+      "feature": "chars_deleted",
+      "group": "quantity",
+      "std_ridge_coef": 0.0010806670653112837,
+      "perm_importance_r2": 0.05713377326596775
     }
   ],
-  "interpretation": "If kind_r2_gain_over_controls exceeds quantity_r2_gain_over_controls, the KIND of editing predicts personal-style recovery better than the AMOUNT of editing, which is the novel claim this analysis sets out to test.",
+  "interpretation": "If kind_r2_gain_over_controls exceeds quantity_r2_gain_over_controls, the KIND of editing predicts personal-style recovery better than the AMOUNT of editing, which is the novel claim this analysis sets out to test. The full model (M3) stacks quantity and kind features that carry overlapping information; with the penalty tuned per fold its cross-validated R^2 reflects that redundancy rather than a lack of shrinkage.",
   "seed": 42
 }

@@ -1,0 +1,21 @@
+{
+  "mlp_embeddings": {
+    "model": "MLP(256-128) on LUAR embeddings",
+    "task": "3way_style",
+    "accuracy": 0.7012345679012346,
+    "balanced_accuracy": 0.7376543209876543,
+    "macro_f1": 0.7303602127397161,
+    "chance": 0.3333333333333333
+  },
+  "lstm_keystrokes": {
+    "model": "LSTM over keystroke edit stream",
+    "task": "predict successful edit (own_gain > 0)",
+    "n_tasks": 280,
+    "positive_rate": 0.7785714268684387,
+    "accuracy": 0.48928571428571427,
+    "balanced_accuracy": 0.6373927197395679,
+    "roc_auc": 0.5966262207753774,
+    "majority_baseline_accuracy": 0.7785714268684387
+  },
+  "seed": 42
+}
