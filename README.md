@@ -319,23 +319,16 @@ length (controls and drafts are different prompts), so it overstates
 generalisable AI detection. The stylometry detector (AUC ≈ 0.98) is the
 fair, confound-limited number.
 
-### Final build report
-
-`python src/make_report.py` reads every result file and regenerates
-`reports/final_build_report.md` — a single consolidated report (reproduction
-table, novel findings, ML/DL results, supplementary experiments, figures,
-and the honest caveats). Run it last, after the pipeline.
-
 ## Repository layout
 
 - `src/` — the main pipeline (reproduction, feature engineering, novel
   edit-recovery and own-vs-generic analyses, classical ML, visualization,
-  deep learning, and `make_report.py`).
+  and deep learning).
 - `experiments/` — supplementary studies kept for completeness but not
   central findings: `style_classifier.py` (overlaps the classical zoo; also
   carries the confounded embedding detector).
 - `requirements.txt` — pinned dependencies.
-- `reports/` — the generated `final_build_report.md` and `figures/`.
+- `reports/` — generated `figures/`.
 
 ## Project Scope
 
